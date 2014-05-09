@@ -334,7 +334,7 @@ limitations under the License.
         /**
          * @return {Number} The current cursor
          * */
-        DataBag.prototype.getCursor = function() {
+        DataBag.prototype.index = function() {
             if(this.__$cursor === null) this.reset();
             return this.__$cursor;
         };
@@ -348,7 +348,7 @@ limitations under the License.
          * */
         DataBag.prototype.next = function() {
 
-            if((this.getCursor()+1) >= this.size())
+            if((this.index()+1) >= this.size())
                 return false;
 
             this.__$cursor++;
@@ -364,7 +364,7 @@ limitations under the License.
          * */
         DataBag.prototype.prev = function() {
 
-            if((this.getCursor() - 1) < 0)
+            if((this.index() - 1) < 0)
                 return false;
 
             this.__$cursor--;
@@ -375,7 +375,7 @@ limitations under the License.
          * @return {Object} The current object in the iterator
          * */
         DataBag.prototype.current = function() {
-            return this.at(this.getCursor());
+            return this.at(this.index());
         };
 
         /**
@@ -418,7 +418,7 @@ limitations under the License.
         DataBag.prototype.get = function(index, channel, defaultValue) {
 
             if(arguments[0]*1 !== arguments[0]) {
-                return this.get(this.getCursor(), arguments[0], arguments[1]);
+                return this.get(this.index(), arguments[0], arguments[1]);
             }
 
             defaultValue = (typeof defaultValue === 'undefined') ? null : defaultValue;

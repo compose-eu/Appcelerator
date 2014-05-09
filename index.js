@@ -48,10 +48,16 @@ limitations under the License.
     // custom errors
     compose.error = {};
 
-    compose.error.ComposeError = function(m) {
+    compose.error.ComposeError = function() {
+        this.mapArgs(arguments);
+    };
+    compose.error.ComposeError.prototype = new Error;
+    compose.error.ComposeError.prototype.mapArgs = function(args) {
+
+        var m = args[0];
 
         if(typeof m === "string") {
-            this.message = m;
+            this.message = args[0];
         }
 
         if(m instanceof Error) {
@@ -60,11 +66,11 @@ limitations under the License.
             this.code = m.code;
             this.errno = m.errno;
         }
-    };
-    compose.error.ComposeError.prototype = new Error;
 
-    compose.error.ValidationError = function(m) {
-        this.message = m;
+    };
+
+    compose.error.ValidationError = function() {
+        this.mapArgs(arguments);
     };
     compose.error.ValidationError.prototype = new compose.error.ComposeError;
 
@@ -191,9 +197,9 @@ limitations under the License.
     };
 
     var setPaths = function() {
-        if(compose.config.platform === 'titanium') {
-            config.platformsPath = config.platformsPath;
-        }
+//        if(compose.config.platform === 'titanium') {
+//            config.platformsPath = config.platformsPath;
+//        }
     };
 
     /*
@@ -405,7 +411,7 @@ limitations under the License.
 
                 window.Compose.ready = function(cb) {
                     onLoadCallback = cb;
-                    if(isReady) cb();
+                    if(isReady) cb(compose);
                 };
 
                 var _d = [];
@@ -437,7 +443,7 @@ limitations under the License.
                         c--;
                         if(c === 0) {
                             // call on load!
-                            onLoadCallback && onLoadCallback();
+                            onLoadCallback && onLoadCallback(compose);
                             isReady = true;
                         }
                     };
