@@ -208,10 +208,10 @@ The json definition can be stored in the `./definitions` folder (eg `./definitio
 ```
 // use just the json filename
 compose.getDefinition("drone")
-.then(compose.load) // enjoy Promise
-.then(function(drone) {
-    console.log("Drone SO loaded!");
-});
+    .then(compose.create) // enjoy Promise
+    .then(function(drone) {
+        console.log("Drone SO loaded!");
+    });
 
 ```
 
@@ -282,6 +282,9 @@ drone.getStream("location")
             console.log("Data loaded " + value.get("latitude") + ", " + value.get("longitude"));
         }
 
+        // count the data list
+        var count = data.size();
+
         // get the current index (position in the list)
         var index = data.index();
 
@@ -300,6 +303,7 @@ drone.getStream("location")
 
         console.log(item);
         // { channels: { latitude: { current-value: 'val' } } }
+
         // shorthand to get the values
         var lat = item.get("latitude"),
             lng = item.get("longitude");
@@ -307,7 +311,7 @@ drone.getStream("location")
 
         //get a value from the list
         // data.get(index, channel_name, defaultValue)
-        var lng1 = data.get(data.size()-1, "longitude", -1)
+        var lng1 = data.get(data.size()-1, "longitude", -1);
 
         console.log( (lng === lng1) ? "It works!" : "Something went wrong.." );
 
