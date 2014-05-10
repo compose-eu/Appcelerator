@@ -1,8 +1,10 @@
 {
-    "private": true,
-    "name": "compose-so",
-    "version": "0.1.1",
-    "description": "Set of functionalities to handle with Compose Service Objects",
+    "name": "compose.io",
+    "description": "Set of functionalities to handle COMPOSE Service Objects",
+    "version": "0.1.2",
+    "homepage": "https://github.com/compose-eu/Appcelerator",
+    "author": "Luca Capra",
+    "license": "Apache 2",
     "main": "index.js",
     "directories": {
         "test": "test"
@@ -15,8 +17,10 @@
         "service-object",
         "IoT"
     ],
-    "author": "Luca Capra",
-    "license": "MIT",
+    "repository" : {
+        "type" : "git",
+        "url" : "https://github.com/compose-eu/Appcelerator.git"
+    },
     "dependencies": {
         "bluebird": "*",
         "mqtt": "*",
