@@ -65,7 +65,10 @@ limitations under the License.
             proto: compose.config.websocket.secure ? 'wss' : 'ws',
             host: compose.config.websocket.url || "api.servioticy.com",
             port: compose.config.websocket.port || "8081",
+            path: compose.config.websocket.path || "",
         };
+
+        wsConf.path = wsConf.path.length && wsConf.path.substr(0,1) !== '/' ? '/' + wsConf.path  : wsConf.path ;
 
         var request = {
             meta: {
@@ -126,9 +129,9 @@ limitations under the License.
             if (needConn) {
 
                 d("[ws client] Connecting to ws server " +
-                        wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+                        wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
-                client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+                client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
                 client.onclose = function() {
                     d("[ws client] Connection closed");

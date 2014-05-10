@@ -99,7 +99,8 @@ compose.setup({
     websocket: {
         proto: 'ws', // or 'wss'
         host: 'api.servioticy.com',
-        port: 8081
+        port: 8081,
+        path: ""
     },
     mqtt: {
         proto: 'mqtt', // or 'mqtts'

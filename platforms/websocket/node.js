@@ -45,8 +45,11 @@ adapter.initialize = function(compose) {
     var wsConf = {
         proto: compose.config.websocket.secure ? 'wss' : 'ws',
         host: host || "api.servioticy.com",
-        port: compose.config.websocket.port || "8081"
+        port: compose.config.websocket.port || "8081",
+        path: compose.config.websocket.path || "",
     };
+
+    wsConf.path = wsConf.path.length && wsConf.path.substr(0,1) !== '/' ? '/' + wsConf.path  : wsConf.path ;
 
     var request = {
         meta: {
@@ -106,9 +109,9 @@ adapter.initialize = function(compose) {
 
 
             d("[ws client] Connecting to ws server " +
-                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
-            client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+            client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
             client.on('close', function() {
                 d("[ws client] Connection closed");

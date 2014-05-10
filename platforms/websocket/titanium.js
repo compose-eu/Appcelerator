@@ -37,7 +37,10 @@ adapter.initialize = function(compose) {
         proto: compose.config.websocket.secure ? 'wss' : 'ws',
         host: compose.config.websocket.host || "api.servioticy.com",
         port: compose.config.websocket.port || "8081",
+        path: compose.config.websocket.path || "",
     };
+
+    wsConf.path = wsConf.path.length && wsConf.path.substr(0,1) !== '/' ? '/' + wsConf.path  : wsConf.path ;
 
     var request = {
         meta: {
@@ -55,7 +58,7 @@ adapter.initialize = function(compose) {
             (client && !isConnected)) {
 
             d("[ti.ws client] Connecting to ws server " +
-                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
             client.addEventListener('close', function() {
                 isConnected = false;
@@ -90,7 +93,7 @@ adapter.initialize = function(compose) {
                 connectionSuccess();
             });
 
-            client.open(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + '/' + compose.config.apiKey);
+            client.open(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
 
         }
         else {
