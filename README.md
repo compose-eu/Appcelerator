@@ -25,7 +25,7 @@ Install the module from the git repository
 
 `npm install https://github.com/compose-eu/Appcelerator.git`
 
-and the `require` it in your code
+and the import it in your code
 
 `var compose = require('Appcelerator')`
 
