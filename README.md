@@ -23,7 +23,7 @@ Node.js
 
 Install the module from the git repository
 
-`npm install https://github.com/compose-eu/Appcelerator`
+`npm install https://github.com/compose-eu/Appcelerator.git`
 
 and the `require` it in your code
 
