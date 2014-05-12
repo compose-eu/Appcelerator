@@ -38,7 +38,7 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 
 Add the library inside the `Resources` folder (or `app/lib` if you use Alloy) in your project, then in the code
 
-`var compose = require('Appcelerator/index')`
+`var compose = require('compose.io/index')`
 
 ##Node.js
 
@@ -48,14 +48,14 @@ Install the module from the git repository
 
 and then import it in your code
 
-`var compose = require('Appcelerator')`
+`var compose = require('compose.io')`
 
 
 ##Browser
 
 You can simply link to the `index.js` script inside your page
 
-`<script src="js/Appcelerator/index.js"></script>`
+`<script src="js/compose.io/index.js"></script>`
 
 The library will self-load all its dependencies, you can provide a callback to the `ready` method in order to get notified of the completion of the operation.
 
@@ -73,23 +73,23 @@ If you wish to use the library in an AMD-enable setup (like with [require.js](ht
 require.config({
     paths: {
 
-        "compose": 'Appcelerator/index',
-        "utils/List": 'Appcelerator/utils/List',
-        "bluebird": 'Appcelerator/vendors/bluebird/browser/bluebird',
-        "client": 'Appcelerator/client',
-        "WebObject": 'Appcelerator/WebObject',
-        "ServiceObject": 'Appcelerator/ServiceObject',
+        "compose.io": 'compose.io/index',
+        "utils/List": 'compose.io/utils/List',
+        "bluebird": 'compose.io/vendors/bluebird/browser/bluebird',
+        "client": 'compose.io/client',
+        "WebObject": 'compose.io/WebObject',
+        "ServiceObject": 'compose.io/ServiceObject',
 
-        "platforms/mqtt/browser": "Appcelerator/platforms/mqtt/browser",
-        "platforms/websocket/browser": "Appcelerator/platforms/websocket/browser",
-        "platforms/http/browser": "Appcelerator/platforms/http/browser"
+        "platforms/mqtt/browser": "compose.io/platforms/mqtt/browser",
+        "platforms/websocket/browser": "compose.io/platforms/websocket/browser",
+        "platforms/http/browser": "compose.io/platforms/http/browser"
 
     }
 });
 ```
 Once done, just request the module
 
-`var compose = require('Appcelerator')`
+`var compose = require('compose.io')`
 
 #Library configuration
 
@@ -160,7 +160,7 @@ compose.list()
 
 ##Create a Service Object
 
-Follows a pseudo drone definition as by COMPOSE spec.
+Follows a pseudo drone definition as per COMPOSE spec.
 
 The `location` stream will keep track of the movement of the drone
 
