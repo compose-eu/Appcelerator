@@ -24,10 +24,12 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
     - [Retrieving data from a Service Object](#retrieving-data-from-a-service-object)
 - [Getting realtime updates](#getting-realtime-updates)
 - [Additional notes](#additional-notes)
+    - [Async impl](#async-impl)
     - [API support](#api-support)
-    - [Tests](#tests)
-    - [Docs](#docs)
-    - [License](#license)
+- [Tests](#tests)
+- [Contributing](#contributing)
+- [Docs](#docs)
+- [License](#license)
 
 <hr>
 
