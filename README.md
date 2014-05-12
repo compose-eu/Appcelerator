@@ -1,25 +1,47 @@
-Js COMPOSE Library
+compose.io - COMPOSE JS library
 ========
 
-The [COMPOSE] JavaScript library is designed to be used with [Titanium Appcelerator] platform, nodejs and modern browser.
+compose.io is the [COMPOSE] JavaScript library designed to be used with [Titanium Appcelerator] platform, node.js and modern browsers.
 
 [Titanium Appcelerator]:http://www.appcelerator.com
 [COMPOSE]:http://www.compose-project.eu
 [REST API]:http://docs.servioticy.com/
 
+#Topics
 
-Installation
---
+- [Installation](#installation)
+    - [Appcelerator Titanium Mobile](#appcelerator-titanium-mobile)
+    - [Node.js](#node.js)
+    - [Browser](#browser)
+- [Library configuration](#library-configuration)
+- [Example usage](#example-usage)
+    - [List all Service Objects](#list-all-service-objects)
+    - [List all Service Objects](#list-all-service-objects)
+    - [Create a Service Object](#create-a-service-object)
+    - [Load a Service Object definition](#load-a-service-object-definition)
+    - [Sending data update](#sending-data-update)
+    - [Loading a Service Object by ID](#loading-a-service-object-by-id)
+    - [Retrieving data from a Service Object](#retrieving-data-from-a-service-object)
+- [Getting realtime updates](#getting-realtime-updates)
+- [Additional notes](#additional-notes)
+- [Additional notes](#additional-notes)
+    - [API support](#api-support)
+    - [Tests](#tests)
+    - [Docs](#docs)
+    - [License](#license)
 
-Appcelerator Titanium Mobile
-----
+<hr>
+
+#Installation
+
+##Appcelerator Titanium Mobile
+
 
 Add the library inside the `Resources` folder (or `app/lib` if you use Alloy) in your project, then in the code
 
 `var compose = require('Appcelerator/index')`
 
-Node.js
-----
+##Node.js
 
 Install the module from the git repository
 
@@ -30,8 +52,7 @@ and then import it in your code
 `var compose = require('Appcelerator')`
 
 
-Browser
-----
+##Browser
 
 You can simply link to the `index.js` script inside your page
 
@@ -71,8 +92,7 @@ Once done, just request the module
 
 `var compose = require('Appcelerator')`
 
-Library configuration
---
+#Library configuration
 
 The minimal configuration required is the apiKey to access the API.
 
@@ -114,11 +134,10 @@ compose.setup({
 
 ```
 
-Example usage
---
+#Example usage
 
-List all Service Objects
-----
+
+##List all Service Objects
 
 ```
 
@@ -140,8 +159,7 @@ compose.list()
 
 ```
 
-Create a Service Object
-----
+##Create a Service Object
 
 Follows a pseudo drone definition as by COMPOSE spec.
 
@@ -200,8 +218,7 @@ compose.create(droneDefinition)
 
 ```
 
-Load a Service Object definition
-----
+##Load a Service Object definition
 
 The json definition can be stored in the `./definitions` folder (eg `./definitions/drone.json`)
 
@@ -215,8 +232,7 @@ compose.getDefinition("drone")
 
 ```
 
-Sending data update
-----
+##Sending data update
 
 First you have to select the stream you want to use, `location` in our case
 
@@ -254,15 +270,13 @@ drone.getStream('location')
 
 ```
 
-Loading a Service Object by ID
-----
+##Loading a Service Object by ID
 
 Imagine now to work on a mobile application to control the drone.
 
 
 
-Retrieving data from a Service Object
-----
+##Retrieving data from a Service Object
 
 Load the drone Service Object by its ID (or load the list and search for it)
 
@@ -319,8 +333,8 @@ drone.getStream("location")
 
 ```
 
-Getting realtime updates
---
+#Getting realtime updates
+
 
 ** This section is under development and changes will occur, soon **
 
@@ -343,8 +357,7 @@ droid.off("data")
 ```
 
 
-Additional notes
---
+#Additional notes
 
 * In order to use mqtt/websocket please setup those bridge until an alternative is available
 * * [mqtt bridge](https://gist.github.com/muka/78d91529473f293b9df9)
@@ -352,14 +365,12 @@ Additional notes
 
 Browser support has been tested on latest Firefox and Chrome (any feedback is appreciated!)
 
-Async impl
-----
+##Async impl
 
 Async request are implemented as [Promise](http://promises-aplus.github.io/promises-spec/), using the [bluebird](https://github.com/petkaantonov/bluebird) library
 
 
-API support
----
+##API support
 
 Current status of the library follows the [Servioticy docs](http://docs.servioticy.com) reference implementation.
 
@@ -384,8 +395,7 @@ Current status of the library follows the [Servioticy docs](http://docs.servioti
 * untested, implemented
 
 
-Tests
---
+#Tests
 
 Unit tests are available in spec/ and use Jasmine Spec
 
@@ -397,15 +407,13 @@ Browser tests are `undefined` at the moment, but will be covered
 
 `npm test`
 
-Contributing
---
+#Contributing
 
 Any help is welcome!
 
 Feel free to open an issue or contact us to discuss the library status
 
-Docs
---
+#Docs
 
 API docs needs review. Can be generated using `jsdoc` and will be added to the repository once the library has a stable release.
 
@@ -414,8 +422,7 @@ API docs needs review. Can be generated using `jsdoc` and will be added to the r
 `jsdoc ./`
 
 
-License
---
+#License
 
 Apache2
 
