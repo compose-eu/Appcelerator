@@ -339,7 +339,6 @@ limitations under the License.
             return this.__$cursor;
         };
 
-
         /**
          * Move foward the internal cursor to the next item
          *
@@ -403,7 +402,7 @@ limitations under the License.
          * @return {Object} Return the last element in the list
          * */
         DataBag.prototype.last = function() {
-            return this.at(this.getValues().length);
+            return this.at(this.size()-1);
         };
 
         /**
@@ -1177,7 +1176,11 @@ limitations under the License.
                 }
 
                 me.getClient().delete('/'+ me.id, null, function() {
-                    me.load({});
+
+                    me.initialize({});
+                    me.id = null;
+                    me.createdAt = null;
+
                     resolve && resolve(me);
                 }, error);
             });

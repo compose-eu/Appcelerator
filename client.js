@@ -203,8 +203,8 @@ limitations under the License.
             var me = this;
             var __receiver = null;
 
-            // 5 seconds
-            var __timeout = 3600000;
+            // 60 seconds
+            var __timeout = 60*1000;
 
             // queue[ uuid ] = { created: xxx, callback: xxx }
             var queue = {};

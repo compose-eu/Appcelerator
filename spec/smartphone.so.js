@@ -117,6 +117,11 @@ exports.definition = {
             api: "19"
         }
     },
-    "actions": [],
+    "actions": [
+        {
+            "name": "notify",
+            "description": "Create a notification"
+        },
+    ],
     "properties": []
 };

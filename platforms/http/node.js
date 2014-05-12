@@ -67,7 +67,26 @@ adapter.initialize = function(compose) {
                     });
                 }
                 else {
-                    handler.emitter.trigger('success', data);
+
+                    try {
+
+                        if(!data){
+                            data = null;
+                        }
+
+                        if(typeof data === 'string'){
+                            data = JSON.parse(data);
+                        }
+
+                        handler.emitter.trigger('success', data);
+                    }
+                    catch(e) {
+
+                        d("Exception parsing response JSON");
+                        d(e);
+
+                        handler.emitter.trigger('error', e);
+                    }
                 }
             });
 
