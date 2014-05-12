@@ -63,7 +63,7 @@ limitations under the License.
         compose.config.websocket = compose.config.websocket || {};
         var wsConf = {
             proto: compose.config.websocket.secure ? 'wss' : 'ws',
-            host: compose.config.websocket.url || "api.servioticy.com",
+            host: compose.config.websocket.host || "api.servioticy.com",
             port: compose.config.websocket.port || "8081",
             path: compose.config.websocket.path || "",
         };

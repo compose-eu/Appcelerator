@@ -36,15 +36,9 @@ adapter.initialize = function(compose) {
 
     compose.config.websocket = compose.config.websocket || {};
 
-    var host = compose.config.websocket.host;
-    if (!host && compose.config.url) {
-        var urlinfo = parseUrl(compose.config.url);
-        host = urlinfo.hostname;
-    }
-
     var wsConf = {
         proto: compose.config.websocket.secure ? 'wss' : 'ws',
-        host: host || "api.servioticy.com",
+        host: compose.config.websocket.host || "api.servioticy.com",
         port: compose.config.websocket.port || "8081",
         path: compose.config.websocket.path || "",
     };
