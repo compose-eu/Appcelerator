@@ -11,7 +11,7 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 
 - [Installation](#installation)
     - [Appcelerator Titanium Mobile](#appcelerator-titanium-mobile)
-    - [Node.js](#node.js)
+    - [Node.js](#nodejs)
     - [Browser](#browser)
 - [Library configuration](#library-configuration)
 - [Example usage](#example-usage)
@@ -23,7 +23,6 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
     - [Loading a Service Object by ID](#loading-a-service-object-by-id)
     - [Retrieving data from a Service Object](#retrieving-data-from-a-service-object)
 - [Getting realtime updates](#getting-realtime-updates)
-- [Additional notes](#additional-notes)
 - [Additional notes](#additional-notes)
     - [API support](#api-support)
     - [Tests](#tests)
