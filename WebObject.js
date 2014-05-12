@@ -474,6 +474,7 @@ limitations under the License.
             var _actions = this.getActions();
             _actions = new compose.util.List.ArrayList(actions);
             _actions.container(this);
+            this.__$actions = _actions;
 
             return this;
         };

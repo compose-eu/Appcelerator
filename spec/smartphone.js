@@ -1,6 +1,6 @@
-exports.definition = {  
-   "name": "Phone", 
-   "description": "COMPOSE phone", 
+exports.definition = {
+   "name": "Phone",
+   "description": "COMPOSE phone",
    "URL": "Web Object URL ",
    "public":"true",
    "streams": {
@@ -20,6 +20,7 @@ exports.definition = {
         }
     },
     "customFields": {},
-    "actions": [],
+    "actions": [
+    ],
     "properties": []
 };

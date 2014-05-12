@@ -3,9 +3,9 @@ describe('WebObject', function() {
 
     var compose = require('../index');
     compose.setup("dummy");
-    
+
     var wo = compose.WebObject;
-    
+
     var smartphoneDefinition = require('./smartphone').definition;
     var smartphoneWo;
 
@@ -22,19 +22,20 @@ describe('WebObject', function() {
     };
 
     it('Create empty WO', function() {
-        woTest = wo.create(wo_def);
+        woTest = new wo(wo_def);
         expect(woTest.name).toEqual(wo_def.name);
     });
 
     it('Create empty WO', function() {
-        var woTest = wo.create(wo_def);
+        var woTest = new wo(wo_def);
         expect(woTest.name).toEqual(wo_def.name);
     });
 
     it('Create Smartphone WO', function() {
-        smartphoneWo = wo.create(smartphoneDefinition);
+        smartphoneWo = new wo(smartphoneDefinition);
         expect(smartphoneWo.description).toEqual(smartphoneDefinition.description);
     });
+
 
     it('Check WO streams', function() {
         expect(smartphoneWo.getStreams().size())
@@ -64,7 +65,7 @@ describe('WebObject', function() {
     });
 
     it('Check WO actions', function() {
-        var smartphoneWo = wo.create(smartphoneDefinition);
+        var smartphoneWo = new wo(smartphoneDefinition);
         expect(smartphoneWo.getActions().size())
             .toEqual(smartphoneDefinition.actions.length);
     });
