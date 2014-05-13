@@ -10,25 +10,13 @@ describe('ServiceObject', function() {
     var smartphone = null;
     var smartphoneDefinition = require('./smartphone.so').definition;
 
-    var _size = function(obj) {
-        var count = 0;
-        for(var i in obj) count++;
-        return count;
-    };
-
-    // @todo handle better this
-    var catchError = function(error) {
-        console.log("\n\n", error ,"\n\n");
-    };
-
-
     it('List SO', function(done) {
         compose.list()
             .then(function(list) {
                 expect(list.length > 0).toBeTruthy();
-                done();
             })
-            .catch(function(e) { catchError(e); done(); });
+            .catch(console.log)
+            .finally(done);
     });
 
 
@@ -37,18 +25,18 @@ describe('ServiceObject', function() {
             .then(function(so) {
                 expect((so.id)).toBeTruthy();
                 smartphone = so;
-                done();
             })
-            .catch(function(e) { catchError(e); done(); });
+            .catch(console.log)
+            .finally(done);
     });
 
     it('Load SO', function(done) {
         compose.load(smartphone.id)
             .then(function(so) {
                 expect(so.id).toEqual(smartphone.id);
-                done();
             })
-            .catch(function(e) { catchError(e); done(); });
+            .catch(console.log)
+            .finally(done);
     });
 
     it('Update SO custom fields', function(done) {
@@ -57,9 +45,9 @@ describe('ServiceObject', function() {
         smartphone.update()
             .then(function(so) {
                 expect(smartphone.customFields.newTestField).toEqual(time);
-                done();
             })
-            .catch(function(e) { catchError(e); done(); });
+            .catch(console.log)
+            .finally(done);
     });
 
     it('Push and pull stream data', function(done) {
@@ -89,62 +77,23 @@ describe('ServiceObject', function() {
                             expect(record.get("latitude")).toEqual(pushData.channels.latitude['current-value']);
 
                         })
-                        .catch(function(e) { catchError(e); })
-                        .finally(function() { done(); });
+                        .catch(console.log)
+                        .finally(done);
 
-                }, 2000);
+                }, 1500);
 
             })
-            .catch(function(e) { catchError(e); });
+            .catch(console.log)
 
     });
-
-//    it('Search by text', function(done) {
-//
-//        var teststream = smartphone.getStream('testsuite');
-//
-//        var __then = function() {
-//            teststream.searchByText("text", "Lorem")
-//                .then(function(data) {
-//
-//                    console.log(data);
-//                    expect(so.id).toEqual(null);
-//                    done();
-//                })
-//                .catch(function(e) { catchError(e); done(); });
-//        };
-//
-//        teststream.push({
-//            text: "ipsum eidam Lorem ",
-//            location: [46.123, 12.321],
-//            number: Math.round()
-//        }).then(function() {
-//
-//            teststream.push({
-//                text: "ipsum eidam",
-//                location: [55.123, 33.321],
-//                number: -1
-//            }).then(function(){
-//
-//                teststream.push({
-//                    text: "Lorem ipsum eidam dolet",
-//                    location: [45.123, 11.321],
-//                    number: Math.round()
-//                }).then(function() {
-//                    __then();
-//                });
-//
-//            });
-//        });
-//    });
 
     it('Delete SO', function(done) {
         smartphone.delete()
             .then(function(so) {
                 expect(so.id).toEqual(null);
-                done();
             })
-            .catch(function(e) { catchError(e); done(); });
+            .catch(console.log)
+            .finally(done);
     });
 
 });

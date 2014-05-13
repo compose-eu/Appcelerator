@@ -302,12 +302,8 @@ limitations under the License.
             }
             else {
 
-                var channel = this.channels.get(name);
+                var channel = this.getChannel(name);
                 if (channel) {
-
-                    if(!this.getCurrentValue()) {
-                        this.setCurrentValue();
-                    }
 
                     var currVal = this.getCurrentValue();
                     currVal.channels[name] = currVal.channels[name] || { 'current-value': null };

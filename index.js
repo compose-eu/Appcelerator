@@ -49,9 +49,10 @@ limitations under the License.
     compose.error = {};
 
     compose.error.ComposeError = function() {
+        this.name = "ComposeError";
         this.mapArgs(arguments);
     };
-    compose.error.ComposeError.prototype = new Error;
+    compose.error.ComposeError.prototype = Error.prototype;
     compose.error.ComposeError.prototype.mapArgs = function(args) {
 
         var m = args[0];
@@ -70,9 +71,10 @@ limitations under the License.
     };
 
     compose.error.ValidationError = function() {
+        this.name = "ValidationError";
         this.mapArgs(arguments);
     };
-    compose.error.ValidationError.prototype = new compose.error.ComposeError;
+    compose.error.ValidationError.prototype = compose.error.ComposeError.prototype;
 
     /**
      * Sniff the current enviroment

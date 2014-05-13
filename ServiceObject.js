@@ -645,8 +645,9 @@ limitations under the License.
 
                 {
                     numeric: {
-                        from:
-                        to:
+                        channel: 'name'
+                        from: 1
+                        to: 10
                     }
                 }
 
@@ -699,11 +700,19 @@ limitations under the License.
                         throw new ComposeError("At least one of `from` or `to` properties has to be provided for time range search");
                     }
 
+                    // set defaults
+                    // if from is not set, set to epoch
+                    queryParams.from = queryParams.from || (new Date(0));
+                    // if to is not set, set to now
+                    queryParams.to = queryParams.to || (new Date());
+
+                    // a timestamp is expected but try parsing other values too
                     var getTimeVal = function(val, label) {
-                        // a timestamp is expected, try to parse other values
-                        var type = typeof hasFrom;
+
+                        var type = typeof val;
                         var date;
                         var err = false;
+
                         if(type === 'number') {
 
                             var d = new Date(val);
@@ -732,12 +741,12 @@ limitations under the License.
                         }
 
                         if(err || !date) {
-                            throw new ComposeError("The value " + val + " for `" + label + "` cannot be parsed as a valid date");
+                            throw new ComposeError("The value " + val + " for `" + label
+                                                        + "` cannot be parsed as a valid date");
                         }
 
                         return date.getTime();
                     };
-
 
                     if(hasFrom) {
                         params.rangefrom = getTimeVal(queryParams.from, 'timeRange.from');
@@ -971,6 +980,12 @@ limitations under the License.
          * @return {Promise} Promise callback with result
          */
         Stream.prototype.searchByTime = function(params) {
+            if(typeof params !== "object") {
+                params = {
+                    from: arguments[0],
+                    to: arguments[1]
+                };
+            }
             return this.search({ time: params });
         };
 
@@ -983,6 +998,11 @@ limitations under the License.
          * @return {Promise} Promise callback with result
          */
         Stream.prototype.searchByNumber = function(channel, params) {
+            if(typeof params !== 'object') {
+                params = {
+                    from: arguments[1], to: arguments[2]
+                }
+            }
             params.channel = channel;
             return this.search({ numeric: params });
         };
@@ -1002,12 +1022,14 @@ limitations under the License.
 
         StreamList.prototype.validate = function(stream) {
 
+            stream.description = stream.description || "";
+
             if(!stream.name) {
-                throw new ValidationError("Stream must have a `name` properties");
+                throw new ValidationError("Stream property `name` is required");
             }
 
-            if(!stream.description) {
-                throw new ValidationError("Stream must have a `description` properties");
+            if(!stream.type) {
+                throw new ValidationError("Stream property `type` is required");
             }
 
             var streamObj = new Stream(stream);

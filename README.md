@@ -402,6 +402,7 @@ Search for data in a stream matching a numeric range constrain
 
 ```
 drone.getStream('stream name').searchByNumber("channel name", { from: 'val1', to: 'val2' });
+drone.getStream('stream name').searchByNumber("channel name", val_from, val_to });
 ```
 
 To combine with other filters
@@ -423,7 +424,6 @@ Search for data in a time range, creation date (`lastUpdate`) value will be used
 // timeFrom / timeTo can be any value readable as a javascript `Date`
 drone.getStream('stream name').searchByTime(timeFrom, timeTo);
 drone.getStream('stream name').searchByTime("Tue May 13 2014 10:21:18 GMT+0200 (CEST)", new Date());
-
 ```
 
 To combine with other filters
