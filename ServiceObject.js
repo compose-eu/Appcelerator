@@ -315,6 +315,15 @@ limitations under the License.
         var DataBag = function(data) {
             this.__$values = (data && data.length) ? data : [];
             this.__$cursor = null;
+            this.__$container = null;
+        };
+
+        /**
+         * @return {Stream} A reference to the source stream
+         * */
+        DataBag.prototype.container = function($__c) {
+            if($__c) this.__$container = $__c;
+            return this.__$container;
         };
 
         /**
@@ -573,7 +582,10 @@ limitations under the License.
                         data = res.data;
                     }
 
-                    resolve && resolve(new DataBag(data), data);
+                    var dataset = new DataBag(data);
+                    dataset.container(me);
+
+                    resolve && resolve(dataset, data);
 
                 }, reject);
             });
@@ -806,7 +818,10 @@ limitations under the License.
                         data = res.data;
                     }
 
-                    resolve && resolve(new DataBag(data), data);
+                    var dataset = new DataBag(data);
+                    dataset.container(me);
+
+                    resolve && resolve(dataset, data);
 
                 }, reject);
             });

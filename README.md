@@ -182,7 +182,14 @@ compose.list().map(compose.load).map(function(so) {
 })
 .then(function(res) {
     // res is now a list of DataBag
-    console.log(res);
+    res.forEach(function(dataset) {
+        console.log( "Last position registered for " +
+            dataset.container() // Stream reference
+                .container() // ServiceObject reference
+                    .id +
+            + " is " + dataset.last().get('latitude') + ", " + dataset.last().get('longitude') );
+    });
+
 })
 // .catch(fn).finally(fn)
 ;
@@ -325,6 +332,14 @@ drone.getStream("location")
             var value = data.current();
             console.log("Data loaded " + value.get("latitude") + ", " + value.get("longitude"));
         }
+
+        // Stream reference
+        var StreamRef = data.container();
+        // ServiceObject reference
+        var ServiceObjectRef = StreamRef.container();
+
+        console.log("Data for " + data.container().container().name + "." + data.container().name);
+        // will print `Data for Drone.location`
 
         // count the data list
         var count = data.size();

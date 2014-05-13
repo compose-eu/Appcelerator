@@ -10,7 +10,7 @@
         "test": "test"
     },
     "scripts": {
-        "test": "jasmine-node spec/"
+        "test": "jasmine-node spec/  --captureExceptions"
     },
     "keywords": [
         "compose",
