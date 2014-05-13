@@ -642,6 +642,14 @@ limitations under the License.
                     "rangeto": 17,
                     "numericrangefield": "channels.age.current-value",
                 }
+
+                {
+                    numeric: {
+                        from:
+                        to:
+                    }
+                }
+
                 */
                 var queryParams = options.numeric;
                 if(queryParams) {
@@ -671,6 +679,13 @@ limitations under the License.
                     "timerange": true,
                     "rangefrom": 1396859660,
                 }
+
+                {
+                    time: {
+                        from: time
+                        to: time
+                    }
+                }
                 */
                 var queryParams = options.time;
                 if(queryParams) {
@@ -684,12 +699,52 @@ limitations under the License.
                         throw new ComposeError("At least one of `from` or `to` properties has to be provided for time range search");
                     }
 
+                    var getTimeVal = function(val, label) {
+                        // a timestamp is expected, try to parse other values
+                        var type = typeof hasFrom;
+                        var date;
+                        var err = false;
+                        if(type === 'number') {
+
+                            var d = new Date(val);
+                            if(d.getTime() !== val) {
+                                d = new Date(val * 1000);
+                                if(d.getTime() !== val) {
+                                    err = true;
+                                }
+                            }
+
+                            if(!err) {
+                                date = d;
+                            }
+                        }
+                        else if(type === "string") {
+                            var d = new Date(val);
+                            if(!d) {
+                                err = true;
+                            }
+                            else{
+                                date = d;
+                            }
+                        }
+                        else if(val instanceof Date) {
+                            date = val;
+                        }
+
+                        if(err || !date) {
+                            throw new ComposeError("The value " + val + " for `" + label + "` cannot be parsed as a valid date");
+                        }
+
+                        return date.getTime();
+                    };
+
+
                     if(hasFrom) {
-                        params.rangefrom = queryParams.from;
+                        params.rangefrom = getTimeVal(queryParams.from, 'timeRange.from');
                     }
 
                     if(hasTo) {
-                        params.rangeto = queryParams.to;
+                        params.rangeto = getTimeVal(queryParams.to, 'timeRange.to');
                     }
 
                 }
@@ -699,6 +754,12 @@ limitations under the License.
                     "match": true,
                     "matchfield": "channels.name.current-value",
                     "matchstring": "Peter John",
+
+                    options.match : {
+                        channel: '',
+                        string: ''
+                    }
+
                 }
                 */
                 var queryParams = options.match;
@@ -717,9 +778,9 @@ limitations under the License.
                 }
 
 
-                var checkForLocationStream = function() {
-                    if(!me.container().getStream('location')) {
-                        throw new ComposeError("To use `distance` based search a `location` stream is required");
+                var checkForLocationChannel = function() {
+                    if(!me.getChannel('location')) {
+                        throw new ComposeError("To use geospatial based search a `location` channel is required");
                     }
                 };
 
@@ -730,12 +791,20 @@ limitations under the License.
                     "geoboxupperleftlat": 43.15,
                     "geoboxbottomrightlat": 47.15,
                     "geoboxbottomrightlon": 15.47
+
+                    bbox: {
+                        coords: [
+                            { latitude: '', longitude: ''}, // top position
+                            { latitude: '', longitude: ''}  // bottom position
+                        ]
+                    }
+
                 }
                 */
                 var queryParams = options.bbox;
                 if(queryParams) {
 
-                    checkForLocationStream();
+                    checkForLocationChannel();
 
                     params.geoboundingbox = true;
 
@@ -760,7 +829,7 @@ limitations under the License.
                     }
 
                     if(!hasBbox) {
-                        throw new ComposeError("A value for `string` property has to be provided for text based search");
+                        throw new ComposeError("The values provided for `coords` option are not valid");
                     }
 
                 }
@@ -778,11 +847,23 @@ limitations under the License.
                         "pointlon": 15.43,
                         "geodistanceunit": "km"
                     }
+
+                    {
+                        distance: {
+                            position: {latitude: '', longitude: ''}
+                            // or
+                            // position: [lat, lon]
+                            value: 'val',
+                            unit: 'km'
+                        }
+                    }
+
+
                     */
                     var queryParams = options.distance;
                     if(queryParams) {
 
-                        checkForLocationStream();
+                        checkForLocationChannel();
 
                         params.geodistance = true;
 
@@ -879,7 +960,7 @@ limitations under the License.
          * @return {Promise} Promise callback with result
          */
         Stream.prototype.searchByText = function(channel, string) {
-            return this.search({ distance: { string: string, channel: channel } });
+            return this.search({ match: { string: string, channel: channel } });
         };
 
         /**

@@ -22,6 +22,12 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
     - [Sending data update](#sending-data-update)
     - [Loading a Service Object by ID](#loading-a-service-object-by-id)
     - [Retrieving data from a Service Object](#retrieving-data-from-a-service-object)
+    - [Search for data in a Stream](#search-for-data-in-a-stream)
+        - [Numeric range](#numeric-range)
+        - [Time range](#time-range)
+        - [Match](#match)
+        - [Bounding box](#bounding-box)
+        - [Distance](#distance)
 - [Getting realtime updates](#getting-realtime-updates)
 - [Additional notes](#additional-notes)
     - [Async impl](#async-impl)
@@ -378,8 +384,136 @@ drone.getStream("location")
 
 ```
 
-#Getting realtime updates
+##Search for data in a Stream
 
+Methods to search for data in a stream. All search method returns promises
+
+Available search types are
+
+- [Numeric range](#numeric-range)
+- [Time range](#time-range)
+- [Match](#match)
+- [Bounding box](#bounding-box)
+- [Distance](#distance)
+
+###Numeric Range
+
+Search for data in a stream matching a numeric range constrain
+
+```
+drone.getStream('stream name').searchByNumber("channel name", { from: 'val1', to: 'val2' });
+```
+
+To combine with other filters
+```
+drone.getStream('stream name').search({
+    numeric: {
+        channel: 'channel name',
+        from: 'val1'
+        to: 'val2'
+    }
+});
+```
+
+###Time Range
+
+Search for data in a time range, creation date (`lastUpdate`) value will be used to match the search
+
+```
+// timeFrom / timeTo can be any value readable as a javascript `Date`
+drone.getStream('stream name').searchByTime(timeFrom, timeTo);
+drone.getStream('stream name').searchByTime("Tue May 13 2014 10:21:18 GMT+0200 (CEST)", new Date());
+
+```
+
+To combine with other filters
+```
+drone.getStream('stream name').search({
+    time: {
+        from: 1368433278000,
+        to:   1399969278000
+    }
+});
+```
+
+###Match
+
+Search for a matching value in a provided channel
+
+```
+drone.getStream('stream name').searchByText("channel name", "string to search");
+```
+
+To combine with other filters
+```
+drone.getStream('stream name').search({
+    match: {
+        channel: "channel name",
+        string: "string to search"
+    }
+});
+```
+
+###Bounding box
+
+Search by a delimiting [bounding box](http://en.wikipedia.org/wiki/Minimum_bounding_box)
+
+This search type will look to match a channel named `location` with a geojson value. [See API docs](http://docs.servioticypublic.apiary.io/#dataqueries)
+
+
+```
+drone.getStream('stream name').searchByBoundingBox([
+    // upper point
+    { latitude: '', longitude: '' },
+    // lower point
+    { latitude: '', longitude: '' }
+]);
+```
+
+To combine with other filters (incompatible with distance, if both provided `bbox` will be used )
+```
+drone.getStream('stream name').search({
+    bbox: {
+        coords: [
+            // upper point
+            { latitude: '', longitude: '' },
+            // lower point
+            { latitude: '', longitude: '' }
+        ]
+        // or
+        // coords: [ toplat, toplon, bottomlat, bottomlon ]
+    }
+});
+```
+
+###Distance
+
+Search data by distance
+
+```
+// default unit is km
+drone.getStream('stream name').searchByDistance({ latitude: 11,longitude: 46 }, 10);
+
+// specifying a unit
+drone.getStream('stream name').searchByDistance({ latitude: 11,longitude: 46 }, 1000, 'm');
+```
+
+To combine with other filters (incompatible with bbox, if both provided `bbox` will be used )
+
+```
+drone.getStream('stream name').search({
+    distance: {
+        position: { latitude: 11, longitude: 46 },
+        // or
+        // position: [11, 46],
+        value: 1,
+        unit: 'km'
+    }
+});
+
+```
+
+#Getting realtime updates
 
 ** This section is under development and changes will occur, soon **
 
