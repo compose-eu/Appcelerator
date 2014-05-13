@@ -160,6 +160,35 @@ compose.list()
 
 ```
 
+Load all the Service Objects in the list.
+
+```
+compose.list().map(compose.load).then(function(list) {
+    // list is an array containing ServiceObject instances
+    list.forEach(function(so) {
+        console.log(so.id, so.toString());
+    })
+})
+// .catch(fn).finally(fn)
+;
+```
+
+Get the data from all the Service Objects in the list
+
+```
+compose.list().map(compose.load).map(function(so) {
+    // return a Promise to use further chainability
+    return so.getStream("location") && so.getStream("location").pull();
+})
+.then(function(res) {
+    // res is now a list of DataBag
+    console.log(res);
+})
+// .catch(fn).finally(fn)
+;
+```
+
+
 ##Create a Service Object
 
 Follows a pseudo drone definition as per COMPOSE spec.
