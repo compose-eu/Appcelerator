@@ -1285,20 +1285,28 @@ limitations under the License.
          *
          * @return {Promise} Promise of the request with a new empty so as argument
          */
-        ServiceObject.prototype.delete = function() {
+        ServiceObject.prototype.delete = function(soid) {
             var me = this;
             return new Promise(function(resolve, error) {
 
-                if(!me.id) {
+                soid = soid || null;
+
+                if(!soid && !me.id) {
                     throw new Error("Missing ServiceObject id.");
                 }
 
-                me.getClient().delete('/'+ me.id, null, function() {
+                if(me.id === soid) {
+                    soid = null;
+                }
 
-                    me.initialize({});
-                    me.id = null;
-                    me.createdAt = null;
+                var delId = soid || me.id;
 
+                me.getClient().delete('/'+ delId, null, function() {
+                    if(!soid) {
+                        me.initialize({});
+                        me.id = null;
+                        me.createdAt = null;
+                    }
                     resolve && resolve(me);
                 }, error);
             });
@@ -1312,6 +1320,14 @@ limitations under the License.
     //    ServiceObject.prototype.toString = compose.WebObject.prototype.toString;
         solib.DataBag = DataBag;
         solib.ServiceObject = ServiceObject;
+
+        /**
+         * Create a Service Object from an object or a WebObject
+         *
+         * @param {Object} wo ServiceObject compatible definition object or WebObject
+         *
+         * @return {Promise} Promise for the future ServiceObject created
+         * */
         solib.create = function(wo) {
 
             if(wo instanceof compose.WebObject) {
@@ -1322,20 +1338,30 @@ limitations under the License.
         };
 
         /**
+         * Delete a Service Object by id
+         *
+         * @param {String} soid ServiceObject id
+         *
+         * @return {Promise} Promise for the future result of the operation
+         * */
+        solib.delete = function(soid) {
+            return (new ServiceObject()).delete(soid);
+        };
+
+        /**
          * @param {String} id ServiceObject id
          *
          * @return {Promise} A promise with the created SO
          */
         solib.load = function(id) {
-            var so = new ServiceObject();
-            return so.load(id);
+            return (new ServiceObject()).load(id);
         };
 
 
         /**
          * Return a API client instance
          *
-         * @todo: move to a autonomous module?
+         * @todo move to a autonomous module?
          * @return {compose.lib.Client.Client} A compose client
          */
         solib.client = function() {
@@ -1354,7 +1380,7 @@ limitations under the License.
                     client.ServiceObject = null;
                     resolve(data);
                 }, reject);
-            }).bind(this);
+            }).bind(client);
         };
 
     };

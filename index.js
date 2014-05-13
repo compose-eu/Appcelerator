@@ -363,6 +363,7 @@ limitations under the License.
         compose.ServiceObject = compose.lib.ServiceObject.ServiceObject;
 
         compose.load = compose.lib.ServiceObject.load;
+        compose.delete = compose.lib.ServiceObject.delete;
         compose.create = compose.lib.ServiceObject.create;
         compose.list = compose.lib.ServiceObject.list;
 
