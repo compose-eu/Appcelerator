@@ -201,6 +201,14 @@ compose.list().map(compose.load).map(function(so) {
 ;
 ```
 
+Delete all the ServiceObject
+```
+compose.list().map(compose.delete).then(function() {
+    console.log("Done");
+})
+// .catch(fn).finally(fn)
+;
+```
 
 ##Create a Service Object
 
