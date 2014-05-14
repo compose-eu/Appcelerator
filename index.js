@@ -462,7 +462,7 @@ limitations under the License.
                     if(requiredName.match(/bluebird/)) {
                         return window.Promise;
                     }
-                    var module = "__$" + requiredName.replace(".\/", "").replace("\/", "_", "g");
+                    var module = "__$" + requiredName.replace(".\/", "").replace("\/", "_", "g").replace("\/", "_", "g");
                     return window[module];
                 };
             };
