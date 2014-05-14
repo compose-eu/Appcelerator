@@ -26,9 +26,113 @@ limitations under the License.
             throw new Error("compose library reference is missing");
         }
 
+
+        /**
+         * @constructor
+         */
+        var Enumerable = function() {};
+        Enumerable.prototype.__$cursor = null
+
+        /**
+         * @returns {mixed} A list of values
+         * */
+        Enumerable.prototype.getList = function() {
+            return this.__$list;
+        };
+
+        /**
+         * @param {mixed} list A list to set
+         * */
+        Enumerable.prototype.setList = function(__list) {
+            this.__$list = __list;
+        };
+
+        /**
+         * @return {Number} The list items length
+         * */
+        Enumerable.prototype.size = function() {
+            return this.getList().length;
+        };
+
+        /**
+         * @return {Number} The current cursor
+         * */
+        Enumerable.prototype.index = function() {
+            if(this.__$cursor === null) this.reset();
+            return this.__$cursor;
+        };
+
+        /**
+         * Move foward the internal cursor to the next item
+         *
+         * @return {Boolean} A value indicating if the operation is possible. False means end of list
+         *
+         * */
+        Enumerable.prototype.next = function() {
+
+            if((this.index()+1) >= this.size())
+                return false;
+
+            this.__$cursor++;
+            return true;
+        };
+
+        /**
+         * Move backward the internal cursor to the previous item
+         *
+         * @return {Boolean} A value indicating if the operation is possible.
+         *                   False means begin of list has been already reached
+         *
+         * */
+        Enumerable.prototype.prev = function() {
+
+            if((this.index() - 1) < 0)
+                return false;
+
+            this.__$cursor--;
+            return true;
+        };
+
+        /**
+         * @return {Object} The current object in the iterator
+         * */
+        Enumerable.prototype.current = function() {
+            return this.at(this.index());
+        };
+
+        /**
+         * Reset the internal cursor
+         * */
+        Enumerable.prototype.reset = function() {
+            this.__$cursor = 0;
+        };
+
+        /**
+         * Return an object at a specific index
+         * */
+        Enumerable.prototype.at = function(i) {
+            var list = this.getList();
+            return (typeof list[i] !== 'undefined') ? list[i] : null;
+        };
+
+        /**
+         * @return {Object} Return the first element in the list
+         * */
+        Enumerable.prototype.first = function() {
+            return this.at(0);
+        };
+
+        /**
+         * @return {Object} Return the last element in the list
+         * */
+        Enumerable.prototype.last = function() {
+            return this.at(this.size()-1);
+        };
+
+
         /**
          * Handles array as a list
-         * 
+         *
          * @constructor
          */
         var ArrayList = function(obj) {
@@ -36,8 +140,7 @@ limitations under the License.
                 this.initialize(obj);
             }
         };
-
-
+        compose.util.extend(ArrayList, Enumerable);
 
         ArrayList.prototype.__$list;
         ArrayList.prototype.__$container;
@@ -279,6 +382,8 @@ limitations under the License.
             }
         };
 
+
+        listlib.Enumerable = Enumerable;
 
         listlib.ArrayList = ArrayList;
         listlib.ObjectList = ObjectList;

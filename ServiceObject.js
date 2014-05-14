@@ -316,10 +316,11 @@ limitations under the License.
          * @returns {DataBag} An object containing the data
          */
         var DataBag = function(data) {
-            this.__$values = (data && data.length) ? data : [];
+            this.__$list = (data && data.length) ? data : [];
             this.__$cursor = null;
             this.__$container = null;
         };
+        compose.util.extend(DataBag, compose.util.List.Enumerable);
 
         /**
          * @return {Stream} A reference to the source stream
@@ -327,94 +328,6 @@ limitations under the License.
         DataBag.prototype.container = function($__c) {
             if($__c) this.__$container = $__c;
             return this.__$container;
-        };
-
-        /**
-         * @returns {Array} A list of values
-         * */
-        DataBag.prototype.getValues = function() {
-            return this.__$values;
-        };
-
-        /**
-         * @return {Number} The list items length
-         * */
-        DataBag.prototype.size = function() {
-            return this.getValues().length;
-        };
-
-        /**
-         * @return {Number} The current cursor
-         * */
-        DataBag.prototype.index = function() {
-            if(this.__$cursor === null) this.reset();
-            return this.__$cursor;
-        };
-
-        /**
-         * Move foward the internal cursor to the next item
-         *
-         * @return {Boolean} A value indicating if the operation is possible. False means end of list
-         *
-         * */
-        DataBag.prototype.next = function() {
-
-            if((this.index()+1) >= this.size())
-                return false;
-
-            this.__$cursor++;
-            return true;
-        };
-
-        /**
-         * Move backward the internal cursor to the previous item
-         *
-         * @return {Boolean} A value indicating if the operation is possible.
-         *                   False means begin of list has been already reached
-         *
-         * */
-        DataBag.prototype.prev = function() {
-
-            if((this.index() - 1) < 0)
-                return false;
-
-            this.__$cursor--;
-            return true;
-        };
-
-        /**
-         * @return {Object} The current object in the iterator
-         * */
-        DataBag.prototype.current = function() {
-            return this.at(this.index());
-        };
-
-        /**
-         * Reset the internal cursor
-         * */
-        DataBag.prototype.reset = function() {
-            this.__$cursor = 0;
-        };
-
-        /**
-         * Return an object at a specific index
-         * */
-        DataBag.prototype.at = function(i, channel, defaultValue) {
-            return this.get(i, channel, defaultValue);
-        };
-
-        /**
-         * @return {Object} Return the first element in the list
-         * */
-        DataBag.prototype.first = function() {
-            return this.at(0);
-        };
-
-        /**
-         * @return {Object} Return the last element in the list
-         * */
-        DataBag.prototype.last = function() {
-            return this.at(this.size()-1);
         };
 
         /**
@@ -434,7 +347,7 @@ limitations under the License.
 
             defaultValue = (typeof defaultValue === 'undefined') ? null : defaultValue;
 
-            var list = this.getValues();
+            var list = this.getList();
             var data = list[index];
             if(data) {
 
