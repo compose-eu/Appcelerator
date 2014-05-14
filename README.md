@@ -325,7 +325,20 @@ drone.getStream('location')
 
 Imagine now to work on a mobile application to control the drone.
 
+```
+var soid = '<ServiceObject id>';
+compose.load(soid)
+    .then(function(drone) {
 
+        // drone is the new ServiceObject
+        console.info("Drone ServiceObject created, id" + drone.id);
+        console.info(drone.toString());
+
+    })
+//  .catch(fn)
+//  .finally(fn)
+    ;
+```
 
 ##Retrieving data from a Service Object
 
