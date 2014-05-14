@@ -44,13 +44,13 @@ limitations under the License.
                     return;
                 }
                 if (http.status >= 400) {
-                    handler.trigger('error', {
+                    handler.emitter.trigger('error', {
                         code: http.status
                     });
                 }
                 else {
                     var json = JSON.parse(http.responseText);
-                    handler.trigger('success', json);
+                    handler.emitter.trigger('success', json);
                 }
             };
 
