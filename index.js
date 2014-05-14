@@ -161,12 +161,11 @@ limitations under the License.
      */
     compose.util.requireModule = function(name, path) {
         path = path || compose.util.getModulePath() + name;
-//        console.log("Requiring " + path);
         return require(path);
     };
 
     /*
-     * Requires a module and call its `setup` module
+     * Requires a module and call its `setup` method, if any
      *
      * @param {type} name
      * @param {type} path
@@ -174,7 +173,7 @@ limitations under the License.
      */
     compose.util.setupModule = function(name, path) {
         var module = compose.util.requireModule(name, path);
-        module.setup && module.setup(compose);
+        (module && module.setup) && module.setup(compose);
         return module;
     };
 
@@ -344,7 +343,6 @@ limitations under the License.
 
         compose.lib.Promise = compose.util.getPromiseLib();
 
-
         if(!compose) {
             throw new compose.error.ComposeError("compose.io module reference not provided, quitting..");
         }
@@ -355,7 +353,6 @@ limitations under the License.
         // initialize & expose WebObject module
         compose.lib.WebObject = compose.util.setupModule("WebObject");
         compose.WebObject = compose.lib.WebObject.WebObject;
-
 
         // initialize & expose ServiceObject module
         compose.lib.ServiceObject = compose.util.setupModule("ServiceObject");
@@ -402,19 +399,25 @@ limitations under the License.
         }
         else {
 
+            // global references container
+            window.__$$Compose = window.__$$Compose || {};
             window.Compose = compose;
+            window.compose = window.compose || compose;
             if(typeof window.require === 'undefined') {
 
                 var _requireAlias = {
                     "bluebird": "vendors/bluebird/browser/bluebird"
                 };
 
-                var isReady = false;
+                window.__$$Compose.isReady = false;
                 var onLoadCallback;
 
                 window.Compose.ready = function(cb) {
                     onLoadCallback = cb;
-                    if(isReady) cb(compose);
+                    if(window.__$$Compose.isReady) {
+                        cb(compose);
+                        onLoadCallback = null;
+                    }
                 };
 
                 var _d = [];
@@ -446,8 +449,8 @@ limitations under the License.
                         c--;
                         if(c === 0) {
                             // call on load!
+                            window.__$$Compose.isReady = true;
                             onLoadCallback && onLoadCallback(compose);
-                            isReady = true;
                         }
                     };
 
@@ -462,8 +465,9 @@ limitations under the License.
                     if(requiredName.match(/bluebird/)) {
                         return window.Promise;
                     }
-                    var module = "__$" + requiredName.replace(".\/", "").replace("\/", "_", "g").replace("\/", "_", "g");
-                    return window[module];
+                    var moduleName = requiredName.replace(/[.\/]+/, "").replace(/\//, "_").replace(/\//, "_");
+                    var module = window.__$$Compose[moduleName];
+                    return module;
                 };
             };
         }

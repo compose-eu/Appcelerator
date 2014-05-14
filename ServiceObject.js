@@ -1312,7 +1312,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$ServiceObject = solib;
+            window.__$$Compose.ServiceObject = solib;
         }
     }
 

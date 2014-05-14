@@ -229,7 +229,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$platforms_websocket_browser = wslib;
+            window.__$$Compose.platforms_websocket_browser = wslib;
         }
     }
 

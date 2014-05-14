@@ -660,7 +660,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$WebObject = wolib;
+            window.__$$Compose.WebObject = wolib;
         }
     }
 

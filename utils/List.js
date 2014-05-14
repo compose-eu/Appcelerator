@@ -401,7 +401,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$utils_List = listlib;
+            window.__$$Compose.utils_List = listlib;
         }
     }
 

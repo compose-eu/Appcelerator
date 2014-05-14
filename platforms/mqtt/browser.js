@@ -33,7 +33,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$platforms_mqtt_browser = mqttlib;
+            window.__$$Compose.platforms_mqtt_browser = mqttlib;
         }
     }
 

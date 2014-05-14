@@ -16,7 +16,6 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 - [Library configuration](#library-configuration)
 - [Example usage](#example-usage)
     - [List all Service Objects](#list-all-service-objects)
-    - [List all Service Objects](#list-all-service-objects)
     - [Create a Service Object](#create-a-service-object)
     - [Load a Service Object definition](#load-a-service-object-definition)
     - [Sending data update](#sending-data-update)

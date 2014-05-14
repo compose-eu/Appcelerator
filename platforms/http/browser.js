@@ -79,7 +79,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$platforms_http_browser = httplib;
+            window.__$$Compose.platforms_http_browser = httplib;
         }
     }
 

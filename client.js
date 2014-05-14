@@ -567,7 +567,7 @@ limitations under the License.
             });
         }
         else {
-            window.__$client = client;
+            window.__$$Compose.client = client;
         }
     }
 

@@ -1,6 +1,12 @@
 describe('ServiceObject', function() {
 
-    var compose = require("../index").setup({
+    var compose = require("../../index");
+
+    if(typeof Compose !== 'undefined') {
+        compose = Compose;
+    }
+
+    compose.setup({
 //        debug: true,
         apiKey: "M2UxYTFmNzQtZDZhYi00ZTNiLWEzZWUtYzdjMTU1MzJhMDE1ZTdlYWRiYzQtMmU2ZS00YTk5LTgyNGQtZDU3YzkzOWQwYzQw",
         url: "http://192.168.9.243:8080",
@@ -38,7 +44,7 @@ describe('ServiceObject', function() {
 
         compose.create(smartphoneDefinition)
             .then(function(so) {
-                
+
                 smartphone = so;
 
                 pushData.forEach(function(data) {
