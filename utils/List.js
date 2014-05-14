@@ -28,7 +28,7 @@ limitations under the License.
 
         /**
          * Handles array as a list
-         *
+         * 
          * @constructor
          */
         var ArrayList = function(obj) {

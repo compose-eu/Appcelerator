@@ -69,18 +69,20 @@ limitations under the License.
             var me = this;
             return new Promise(function(resolve, reject) {
 
-                var url = '/'+me.container().id+'/streams/'+ me.name
+                var so = me.container().container();
+
+                var url = '/'+so.id+'/streams/'+ me.container().name
                                 +'/subscriptions'+ (me.id ? '/'+me.id : '');
 
-                me.container().getClient().post(url, me.toJson(), function(data) {
+                so.getClient().post(url, me.toJson(), function(data) {
 
                     me.id = data.id;
                     me.created = data.id;
 
-                    resolve && resolve(me);
+                    resolve && resolve(me, me.container());
 
                 }, reject);
-            });
+            }).bind(me.container().container());
         };
 
         /**
@@ -152,13 +154,14 @@ limitations under the License.
          */
         SubscriptionList.prototype.refresh = function() {
             var me = this;
+            var so = me.container().container();
             return new Promise(function(resolve, reject) {
-                var url = '/'+me.container().id+'/streams/'+ me.name +'/subscriptions/';
-                me.container().getClient().get(url, null, function(data) {
-                    me.setSubscriptions(data.subscriptions);
-                    resolve(data.subscriptions);
-                }, reject).bind(me.container());
-            });
+                var url = '/'+so.id+'/streams/'+ me.container().name +'/subscriptions/';
+                so.getClient().get(url, null, function(data) {
+                    me.initialize(data.subscriptions);
+                    resolve(me, me.container());
+                }, reject);
+            }).bind(so);
         };
 
         /**
@@ -482,8 +485,9 @@ limitations under the License.
 
             this.__$parent.initialize.call(this, obj);
 
-            this.__$subscriptions = new SubscriptionList(obj.subscriptions || {});
-            this.__$subscriptions.container(this.container());
+            var subscriptions = new SubscriptionList(obj.subscriptions || {});
+            subscriptions.container(this);
+            this.__$subscriptions = subscriptions;
 
             return this;
         };
