@@ -18,16 +18,16 @@ describe('ServiceObject', function() {
     var smartphone = null;
     var smartphoneDefinition = require('./smartphone.so').definition;
 
-//    it('List SO', function(done) {
-//        compose.list()
-//            .then(function(list) {
-//                expect(list.length > 0).toBeTruthy();
-//            })
-//            .catch(console.log)
-//            .finally(done);
-//    });
-//
-//
+    it('List SO', function(done) {
+        compose.list()
+            .then(function(list) {
+                expect(list.length > 0).toBeTruthy();
+            })
+            .catch(console.log)
+            .finally(done);
+    });
+
+
     it('Create SO', function(done) {
         compose.create(smartphoneDefinition)
             .then(function(so) {
@@ -37,27 +37,27 @@ describe('ServiceObject', function() {
             .catch(console.log)
             .finally(done);
     });
-//
-//    it('Load SO', function(done) {
-//        compose.load(smartphone.id)
-//            .then(function(so) {
-//                expect(so.id).toEqual(smartphone.id);
-//            })
-//            .catch(console.log)
-//            .finally(done);
-//    });
-//
-//    it('Update SO custom fields', function(done) {
-//        var time = new Date().getTime();
-//        smartphone.customFields.newTestField = time;
-//        smartphone.update()
-//            .then(function(so) {
-//                expect(smartphone.customFields.newTestField).toEqual(time);
-//            })
-//            .catch(console.log)
-//            .finally(done);
-//    });
-//
+
+    it('Load SO', function(done) {
+        compose.load(smartphone.id)
+            .then(function(so) {
+                expect(so.id).toEqual(smartphone.id);
+            })
+            .catch(console.log)
+            .finally(done);
+    });
+
+    it('Update SO custom fields', function(done) {
+        var time = new Date().getTime();
+        smartphone.customFields.newTestField = time;
+        smartphone.update()
+            .then(function(so) {
+                expect(smartphone.customFields.newTestField).toEqual(time);
+            })
+            .catch(console.log)
+            .finally(done);
+    });
+
     it('Push and pull stream data', function(done) {
 
         var stream = smartphone.getStream('location');
@@ -144,13 +144,13 @@ describe('ServiceObject', function() {
 
     });
 
-//    it('Delete SO', function(done) {
-//        smartphone.delete()
-//            .then(function(so) {
-//                expect(so.id).toEqual(null);
-//            })
-//            .catch(console.log)
-//            .finally(done);
-//    });
+    it('Delete SO', function(done) {
+        smartphone.delete()
+            .then(function(so) {
+                expect(so.id).toEqual(null);
+            })
+            .catch(console.log)
+            .finally(done);
+    });
 
 });
