@@ -18,21 +18,20 @@ describe('ServiceObject', function() {
     var smartphone = null;
     var smartphoneDefinition = require('./smartphone.so').definition;
 
-    it('List SO', function(done) {
-        compose.list()
-            .then(function(list) {
-                expect(list.length > 0).toBeTruthy();
-            })
-            .catch(console.log)
-            .finally(done);
-    });
-
-
     it('Create SO', function(done) {
         compose.create(smartphoneDefinition)
             .then(function(so) {
                 expect((so.id)).toBeTruthy();
                 smartphone = so;
+            })
+            .catch(console.log)
+            .finally(done);
+    });
+
+    it('List SO', function(done) {
+        compose.list()
+            .then(function(list) {
+                expect(list.length > 0).toBeTruthy();
             })
             .catch(console.log)
             .finally(done);
