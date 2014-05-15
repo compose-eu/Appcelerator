@@ -291,7 +291,7 @@ The simple way
 
 ```javascript
 
-drone.push({
+drone.getStream('location').push({
     latitude: 11.234,
     longitude: 45.432
 }).then(successCallback);
