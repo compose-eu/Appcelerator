@@ -163,7 +163,6 @@ limitations under the License.
             }
         };
 
-        Stream.prototype.__$lastUpdate = null;
         Stream.prototype.__$container;
 
         Stream.prototype.container = function(o) {
@@ -187,8 +186,6 @@ limitations under the License.
 
             this.channels = new ChannelsList(obj.channels || {});
             this.channels.container(this.container());
-
-            this.setLastUpdate((new Date).getTime());
         };
 
         /**
@@ -217,9 +214,6 @@ limitations under the License.
 
             return this;
         };
-
-        Stream.prototype.__$currentValue;
-        Stream.prototype.__$lastUpdate = null;
 
         /**
          * Add or updates a list of channels

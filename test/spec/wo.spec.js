@@ -1,14 +1,7 @@
 
 describe('WebObject', function() {
 
-    compose = Compose || require('../../index');
-
-//    if(typeof Compose !== 'undefined') {
-//        compose = Compose;
-//    }
-
-    console.log(__$$Compose);
-
+    compose = require('../../index');
     compose.setup("dummy");
 
     var wo = compose.WebObject;
