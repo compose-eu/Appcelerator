@@ -284,39 +284,18 @@ compose.getDefinition("drone")
 
 ##Sending data update
 
-First you have to select the stream you want to use, `location` in our case
+First you have to select the stream you want to use, `location` in our case, and the send the data with the `push` method.
 
-The simple way
+The first argument is a list of key/value pair as channel name / channel value;
+
+The second argument (optional, default is set to now) is a readable date value for the channels data to send
 
 ```javascript
 
-drone.push({
+drone.getStream('location').push({
     latitude: 11.234,
     longitude: 45.432
-}).then(successCallback);
-
-```
-
-Alternative, detailed example
-
-```javascript
-
-// select a stream
-drone.getStream('location')
-
-    // set a single channel name
-    .setValue('latitude', 11.234)
-
-    // set multiple values
-    .setValues({
-        latitude: 11.234,
-        longitude: 45.432
-    })
-
-    // set the data update time, as unix timestamp.
-    // If not set,  the request timestamp will be used
-    .setLastUpdate( (new Date).getTime() )
-    .push();
+}, new Date()).then(successCallback);
 
 ```
 

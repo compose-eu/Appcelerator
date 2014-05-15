@@ -88,8 +88,6 @@ limitations under the License.
         /**
          * Update a ServiceObject subscription
          *
-         * @param {String} subscriptionId The subscription Id instance
-         *
          * @return {Promise} Promise callback with result
          */
         Subscription.prototype.update = function() {
@@ -109,8 +107,6 @@ limitations under the License.
 
         /**
          * Delete a ServiceObject subscription
-         *
-         * @param {String} subscriptionId The subscription Id instance
          *
          * @return {Promise} Promise callback with result
          */
@@ -442,6 +438,67 @@ limitations under the License.
         };
 
         /**
+         * Prepare a list of data values formatted to be sent to the backend
+         *
+         * @see Stream.push
+         *
+         * @param {Object} values A list of channels name and their values
+         * @param {Number|Date|String} lastUpdate A value rapresenting the lastUpdate for the data values
+         *
+         * @return {Stream} The current stream
+         */
+        Stream.prototype.prepareData = function(values, lastUpdate) {
+
+            var me = this;
+
+            // default value
+            if(typeof lastUpdate === 'undefined') {
+                lastUpdate = new Date();
+            }
+
+            if(typeof lastUpdate === 'string' || typeof lastUpdate === 'number') {
+                lastUpdate = new Date(lastUpdate);
+            }
+
+            if(lastUpdate instanceof Date) {
+                lastUpdate = lastUpdate.getTime();
+            }
+
+            if(!lastUpdate) {
+                throw new compose.error.ValidationError("prepareData expect");
+            }
+
+            // convert from milliseconds to seconds
+            if(lastUpdate.toString().length === 13) {
+                lastUpdate = Math.round(lastUpdate / 1000);
+            }
+
+            var data = {
+                channels: {},
+                lastUpdate: lastUpdate
+            };
+
+            if(typeof values === "object") {
+                for(var name in values) {
+                    var channel = this.getChannel(name);
+                    if (channel) {
+                        data.channels[ name ]['current-value'] = values[name];
+                    }
+                    else {
+                        if(console && console.log)
+                            console.log("Channel " + name + " is not available in stream " + me.name);
+                    }
+                }
+            }
+            else {
+                var type = typeof values;
+                throw new compose.error.ValidationError("prepareData expect an `object` as first parameter, `" + type + "` has been provided");
+            }
+
+            return data;
+        };
+
+        /**
          * Send data to a ServiceObject stream
          *
          * @return {Promise} Promise callback with result
@@ -454,22 +511,9 @@ limitations under the License.
                     throw new ComposeError("Missing ServiceObject id.");
                 }
 
-                if(data) {
-                    me.setValue(data);
-                    lastUpdate = lastUpdate || (new Date).getTime();
-                    me.setLastUpdate(lastUpdate);
-                }
-
+                var values = me.prepareData(data, lastUpdate);
                 var url = '/' + me.container().id + '/streams/' + me.name;
-                me.container().getClient().put(url, me.getCurrentValue(), function(data) {
-
-                    // reset the current value on success (no params)
-                    me.setCurrentValue();
-
-                    resolve && resolve(data);
-
-                }, reject);
-
+                me.container().getClient().put(url, values, resolve, reject);
             });
         };
 

@@ -200,7 +200,6 @@ limitations under the License.
          * @param {String} name Name of the channel
          * @param {String|Object} channel|unit Channel object (or unit value, when arguments count is >= 3)
          * @param {String} type Type of value
-         * @param {String} value Current value of the channel
          *
          * @return {Stream} The current stream
          * */
@@ -212,9 +211,6 @@ limitations under the License.
                     "unit": arguments[1],
                     "type": arguments[2]
                 };
-                if (typeof arguments[3] !== "undefined") {
-                    this.setValue(channel, arguments[3]);
-                }
             }
 
             this.channels.add(name, channel);
@@ -234,128 +230,6 @@ limitations under the License.
          * */
         Stream.prototype.addChannels = function(channels) {
             this.channels.add(channels);
-            return this;
-        };
-
-        /**
-         * Set the value of a channel
-         *
-         * @param {String} name Channel name
-         * @param {String} key Key of the channel to set
-         * @param {mixed} value The value to set. If omitted, key will be used as current-value
-         *
-         * @return {Stream} The current stream
-         */
-        Stream.prototype.setChannel = function(name, key, value) {
-            var channel = this.channels.get(name);
-            if (channel) {
-
-                // set value to alternative var
-                //      or if 2 args only are provided
-                if(key === 'current-value'
-                        || typeof value === 'undefined') {
-                    this.setValue(name, key);
-                }
-                else {
-                    channel[key] = value;
-                }
-
-                this.channels.add(name, channel);
-            }
-            return this;
-        };
-
-        /*
-         *
-         * @param {Object} value Set the current value. If not set, the current value is emptyed. To add values for a single channel, use setValue
-         * @see setValue
-         *
-         * @returns {Stream}
-         */
-        Stream.prototype.setCurrentValue = function(value) {
-            this.__$currentValue = value ? value : { channels: {}, lastUpdate: null };
-            return this;
-        };
-        /*
-         *
-         * @returns {Object} An object with the channels value
-         */
-        Stream.prototype.getCurrentValue = function() {
-            if(!this.__$currentValue) {
-                this.setCurrentValue();
-            }
-            return this.__$currentValue;
-        };
-
-        /**
-         * Set value for a channel of the stream
-         *
-         * @param {String} name The channel name
-         * @param {mixed} value The channel value
-         *
-         */
-        Stream.prototype.setValue = function(name, value) {
-            if(typeof name === "object") {
-                for(var i in name) {
-                    this.setValue(i, name[i]);
-                }
-            }
-            else {
-
-                var channel = this.getChannel(name);
-                if (channel) {
-
-                    var currVal = this.getCurrentValue();
-                    currVal.channels[name] = currVal.channels[name] || { 'current-value': null };
-                    currVal.channels[name]['current-value'] = value;
-                    currVal.lastUpdate = this.__$lastUpdate;
-                }
-            }
-            return this;
-        };
-
-        /**
-         *
-         * @return {Object} The values of the stream
-         * */
-        Stream.prototype.getValues = function() { return this.getCurrentValue.apply(this, arguments); };
-
-        /**
-         *
-         * @argument {String} channel The channel name. If empty the whole stream object will be returned
-         *
-         * @return {mixed} A value  stored for a stream
-         * */
-        Stream.prototype.getValue = function(channel) {
-            var values = this.getCurrentValue();
-            if(channel) {
-                if(values.channels && values.channels[channel]
-                            && values.channels[channel]['current-value']) {  // lazy guy :P
-                    return values.channels[channel]['current-value'];
-                }
-                return null;
-            }
-            return values;
-        };
-
-        /**
-         * Set the value of a channel
-         *
-         * @param {mixed} value The value to set. If omitted, the current timestamp will be used.
-         *                      If the value is in milliseconds (length is 13chars) it will be rounded to seconds.
-         *
-         * @return {Stream} The current stream
-         */
-        Stream.prototype.setLastUpdate = function(value) {
-            value = value || (new Date).getTime();
-
-            // convert from milliseconds to seconds
-            if(value.toString().length === 13) {
-                value = Math.round(value / 1000);
-            }
-
-            this.__$lastUpdate = value;
-            this.getCurrentValue().lastUpdate = this.__$lastUpdate;
             return this;
         };
 
@@ -523,67 +397,6 @@ limitations under the License.
                 for (var i = 0; i < actions.length; i++) {
                     this.getActions().add(actions[i]);
                 }
-            }
-            return this;
-        };
-
-        /**
-         * Set a channel value
-         *
-         * @param {String} stream The name of the stream
-         * @param {String} channel The name of the channel
-         * @param {String} key The key of the channel to set
-         * @param {mixed} value The value of the channel
-         *
-         * @return {WebObject} Object self reference
-         */
-        WebObject.prototype.setChannel = function(stream, channel, key, value) {
-            var stream = this.getStream(stream);
-            if(stream) {
-                stream.setChannel(channel, key, value);
-            }
-            return this;
-        };
-
-        /**
-         * Set a channel value
-         *
-         * @param {String} stream The name of the stream or an object with stream name as key
-         *                        and object with channel name as key and their values.
-         *                        eg { streamName: { channelName1: value, channelName2: value } }
-         * @param {String} channel The name of the channel or and object with channel name as key and its value
-         *                        eg { channelName1: value, channelName2: value }
-         * @param {mixed} value The value of the channel
-         *
-         * @return {WebObject} Object self reference
-         */
-        WebObject.prototype.setValue = function(stream, channel, value) {
-            if(typeof stream === 'object') {
-                for(var i in stream) {
-                    this.setValue.apply(this, [i, stream[i]]);
-                }
-            }
-            else {
-                var stream = this.getStream(stream);
-                if(stream) {
-                    stream.setValue(channel, value);
-                }
-            }
-            return this;
-        };
-
-        /**
-         * Get a channel value
-         *
-         * @param {String} stream The name of the stream
-         * @param {String} channel The name of the channel
-         *
-         * @return {mixed} The value of a channel or null if not set
-         */
-        WebObject.prototype.getValue = function(stream, channel) {
-            var stream = this.getStream(stream);
-            if(stream) {
-                return  stream.getValue(channel);
             }
             return this;
         };
