@@ -31,7 +31,8 @@ limitations under the License.
          * @constructor
          */
         var Enumerable = function() {};
-        Enumerable.prototype.__$cursor = null
+        Enumerable.prototype.__$cursor = null;
+        Enumerable.prototype.__$list = null;
 
         /**
          * @returns {mixed} A list of values

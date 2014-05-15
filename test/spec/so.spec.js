@@ -1,5 +1,7 @@
 describe('ServiceObject', function() {
 
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+
     var compose = require("../../index");
 
     if(typeof Compose !== 'undefined') {
@@ -63,13 +65,14 @@ describe('ServiceObject', function() {
             latitude: 11.123,
             longitude: 45.321
         };
+        var lastUpdate = (new Date).toString();
 
-        stream.setValue(raw);
-        var pushData = stream.getCurrentValue();
+        var pushData = stream.prepareData(raw, lastUpdate);
 
-        expect(raw.latitude).toEqual(stream.getValue('latitude'));
+        expect(raw.longitude).toEqual(pushData.channels.longitude['current-value']);
+        expect(lastUpdate).toEqual(new Date(pushData.lastUpdate * 1000).toString());
 
-        stream.push()
+        stream.push(raw)
             .then(function() {
 
                 setTimeout(function() {

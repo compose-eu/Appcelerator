@@ -313,7 +313,6 @@ limitations under the License.
          */
         var DataBag = function(data) {
             this.__$list = (data && data.length) ? data : [];
-            this.__$cursor = null;
             this.__$container = null;
         };
         compose.util.extend(DataBag, compose.util.List.Enumerable);
@@ -325,6 +324,14 @@ limitations under the License.
             if($__c) this.__$container = $__c;
             return this.__$container;
         };
+
+        /**
+         * Return an object at a specific index
+         * */
+        DataBag.prototype.at = function(i) {
+            return this.get(i);
+        };
+
 
         /**
          * Return an object in the list. If index is not provided, the current cursor position will be used
@@ -470,7 +477,7 @@ limitations under the License.
 
             // convert from milliseconds to seconds
             if(lastUpdate.toString().length === 13) {
-                lastUpdate = Math.round(lastUpdate / 1000);
+                lastUpdate = Math.floor(lastUpdate / 1000);
             }
 
             var data = {
@@ -482,6 +489,7 @@ limitations under the License.
                 for(var name in values) {
                     var channel = this.getChannel(name);
                     if (channel) {
+                        data.channels[ name ] = data.channels[ name ] || {};
                         data.channels[ name ]['current-value'] = values[name];
                     }
                     else {
@@ -492,7 +500,7 @@ limitations under the License.
             }
             else {
                 var type = typeof values;
-                throw new compose.error.ValidationError("prepareData expect an `object` as first parameter, `" + type + "` has been provided");
+                throw new compose.error.ValidationError("prepareData expect an `object` as first parameter but `" + type + "` has been provided");
             }
 
             return data;
@@ -509,6 +517,10 @@ limitations under the License.
 
                 if(!me.container().id) {
                     throw new ComposeError("Missing ServiceObject id.");
+                }
+
+                if(!data) {
+                    throw new ComposeError("Data for push has to be provided as first argument");
                 }
 
                 var values = me.prepareData(data, lastUpdate);
