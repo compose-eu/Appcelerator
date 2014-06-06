@@ -34,6 +34,7 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 - [Tests](#tests)
 - [Contributing](#contributing)
 - [Docs](#docs)
+- [Examples](#examples)
 - [License](#license)
 
 <hr>
@@ -42,8 +43,17 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 
 ##Appcelerator Titanium Mobile
 
+First you will need to install the native [mqtt module for Titanium](https://github.com/compose-eu/MobileSDK/tree/master/MQTT)
 
-Add the library inside the `Resources` folder (or `app/lib` if you use Alloy) in your project, then in the code
+Extract the archive to `<project>/modules` and add to your `tiapp.xml` the module reference  
+
+```xml
+<modules>
+    <module platform="android">it.uhopper.mqtt</module>
+</modules>
+```    
+
+Add the `compose.io` javascript library inside the `Resources` folder (or `app/lib` if you use Alloy) in your project, then in the code
 
 `var compose = require('compose.io/index')`
 
