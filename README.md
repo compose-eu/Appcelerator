@@ -34,7 +34,6 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 - [Tests](#tests)
 - [Contributing](#contributing)
 - [Docs](#docs)
-- [Examples](#examples)
 - [License](#license)
 
 <hr>
@@ -599,7 +598,7 @@ Browser tests are `undefined` at the moment, but will be covered
 
 Any help is welcome!
 
-Feel free to open an issue or contact us to discuss the library status
+Feel free to open an issue or contact us to discuss the library status and future development.
 
 #Docs
 
