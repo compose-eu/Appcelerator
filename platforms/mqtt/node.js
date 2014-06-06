@@ -17,12 +17,10 @@ limitations under the License.
 
 
 var DEBUG = false;
-DEBUG = true;
+//DEBUG = true;
 
-var d = function(m) {
-    DEBUG && console.log(m);
-};
-
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
+    
 var mqtt = require("mqtt");
 var parseUrl = require("url").parse;
 

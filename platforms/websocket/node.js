@@ -19,9 +19,7 @@ limitations under the License.
 var DEBUG = false;
 
 
-var d = function(m) {
-    DEBUG && console.log(m);
-};
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
 
 var WebSocket = require('ws');
 var parseUrl = require("url").parse;

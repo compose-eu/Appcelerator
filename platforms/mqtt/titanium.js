@@ -16,7 +16,99 @@ limitations under the License.
 ******************************************************************************/
 
 
+var DEBUG = false;
+
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
+
+var mqtt = require("it.uhopper.mqtt");
+
+var client;
+var connected = false;
+
+
 var adapter = module.exports;
+
 adapter.initialize = function(compose) {
-    throw new compose.error.ComposeError("Titanium support has not been implemented yet.");
+	DEBUG = compose.config.debug;
+	var queue = this.queue;
+	
+	var request = {
+        meta: {
+            authorization: compose.config.apiKey
+        },
+        body: {}
+    };
+	
+    adapter.connect = function(handler, connectionSuccess, connectionFail){
+
+        d("Connection requested");
+
+        if(!client || !connected) {
+            client = mqtt.registerCallback(compose.config.apiKey, {
+                success: function(data){
+                    d("Response received");
+                    d(data);
+                    handler.emitter.trigger('connect', client);
+                    connected = true;
+                    connectionSuccess();
+                },
+                error: function(data){
+                    d("onError");
+                    d(data);
+                    connected = false;
+                    connectionFail(data);
+                },
+                callback: function(data){
+                    d("onCallback");
+                    d("notification ");
+                    d(data);
+                    queue.handleResponse({"data": data}); 
+                }
+            }); 
+        }
+
+    };
+
+    adapter.disconnect = function(connectionSuccess, connectionFail) {
+        mqtt.unregisterForNotification({
+            success: function(data){
+                connected = false;
+                client = null;
+                connectionSuccess(data);
+            },
+            error: function(data){
+                connected = false;
+                client = null;
+                connectionFail(data);
+            }
+        });
+    };
+
+    adapter.subscribeToTopic = function(topic) {
+        mqtt.subscribeToTopic(topic);
+    };
+
+    adapter.unsubscribeFromTopic = function() {
+        mqtt.unSubscribeToTopic(topic);
+    };
+
+    adapter.request = function(handler) {
+//    	d("Request: ")
+//        d(handler);
+    	
+    	request.meta.method = handler.method;
+    	request.meta.url = handler.path;
+    	
+    	if(handler.body){
+    		request.body = handler.body;
+    	}
+    	
+    	d("Request:");
+        d(request);
+    	
+    	request.messageId = queue.add(handler);
+    	
+        mqtt.publishData(compose.config.apiKey, JSON.stringify(request));
+    };
+
 };
