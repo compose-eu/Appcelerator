@@ -1208,10 +1208,9 @@ limitations under the License.
         /**
          * Get the ServiceObject description
          *
-         * @param {Function} then Function to call after request is completed. eg. function(error, WebObject) {}
          * @param {String} soId A service object Id
          *
-         * @return {ServiceObject} Self reference
+         * @return {Promise} Promise of the request with the ServiceObject as argument
          */
         ServiceObject.prototype.load = function(id) {
             var me = this;
@@ -1236,7 +1235,7 @@ limitations under the License.
         /**
          * Update a Service Object
          *
-         * @return {Promise} Promise of the request with the so as argument
+         * @return {Promise} Promise of the request with the ServiceObject as argument
          */
         ServiceObject.prototype.update = function() {
             var me = this;
@@ -1254,6 +1253,7 @@ limitations under the License.
 
         /**
          * Delete a Service Object
+         * 
          * @param {String} Optional, the soid to delete
          *
          * @return {Promise} Promise of the request with a new empty so as argument

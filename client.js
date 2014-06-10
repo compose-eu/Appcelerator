@@ -328,7 +328,6 @@ limitations under the License.
             this.handleResponse = function(message, raw) {
 
                 var response;
-
                 if(typeof message === 'object') {
                     response = message;
                 }
@@ -340,6 +339,7 @@ limitations under the License.
                     catch (e) {
                         console.error("Error reading JSON response");
                         console.error(e);
+//                        d(response);
                         response = null;
                     }
                 }
@@ -365,6 +365,7 @@ limitations under the License.
                         }
 
                         d("[queue manager] Message found, id " + response.messageId);
+                        this.remove(response.messageId);
                         delete response.messageId;
 
                         return true;

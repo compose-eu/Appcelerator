@@ -37,8 +37,8 @@ adapter.initialize = function(compose) {
     var wsConf = {
         proto: compose.config.websocket.secure ? 'wss' : 'ws',
         host: compose.config.websocket.host || "api.servioticy.com",
-        port: compose.config.websocket.port || "8081",
-        path: compose.config.websocket.path || "",
+        port: compose.config.websocket.port || "61623",
+        path: compose.config.websocket.path || ""
     };
 
     wsConf.path = wsConf.path.length && wsConf.path.substr(0,1) !== '/' ? '/' + wsConf.path  : wsConf.path ;
@@ -101,11 +101,16 @@ adapter.initialize = function(compose) {
 
 
             d("[ws client] Connecting to ws server " +
-                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
+                    wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path 
+                //    + '/' + compose.config.apiKey
+                );
 
-            client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path + '/' + compose.config.apiKey);
+            client = new WebSocket(wsConf.proto +'://'+ wsConf.host + ':' + wsConf.port + wsConf.path 
+                    //+ '/' + compose.config.apiKey
+                );
 
             client.on('close', function() {
+
                 d("[ws client] Connection closed");
                 handler.emitter.trigger('close', client);
             });
@@ -126,7 +131,6 @@ adapter.initialize = function(compose) {
                 client.on('message', function(message, flags) {
                     d("[ws client] New message received");
                     queue.handleResponse(message);
-
                 });
 
                 // return promise
@@ -149,7 +153,6 @@ adapter.initialize = function(compose) {
      */
     adapter.request = function(handler) {
 
-
         request.meta.method = handler.method;
         request.meta.url = handler.path;
 
@@ -165,7 +168,7 @@ adapter.initialize = function(compose) {
         }
 
         request.messageId = queue.add(handler);
-
+        
         d("[ws client] Sending message..");
         client.send(JSON.stringify(request), function(error) {
 

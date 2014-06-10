@@ -32,7 +32,7 @@ var parseResponseContent = function(message) {
         meta: {},
         body: {}
     };
-
+    
     if(!message) {
         return response;
     }
@@ -51,7 +51,13 @@ var parseResponseContent = function(message) {
     }
 
     response.body = parts[1] ? JSON.parse(parts[1]) : {};
-
+    
+    // @TODO see if it is possible to move messageId outside the body
+    if(typeof response.body.messageId !== 'undefined') {
+        response.messageId = response.body.messageId;
+        delete response.body.messageId;
+    }
+    
     return response;
 };
 
@@ -130,7 +136,11 @@ adapter.initialize = function(compose) {
                     client.on('message', function(topic, message, response) {
 
                         d("[mqtt client] New message from topic " + topic);
-                        queue.handleResponse(message);
+                        var resp = parseResponseContent(message);
+//                        d(message);
+//                        d('---------------------------')
+//                        d(resp);
+                        queue.handleResponse(resp);
                     });
 
                     // return promise
@@ -156,9 +166,8 @@ adapter.initialize = function(compose) {
     adapter.request = function(handler) {
 
         request.meta.method = handler.method.toUpperCase();
-        var urlinfo = parseUrl(compose.config.url);
-        request.meta.url = urlinfo.path;
-
+        request.meta.url = handler.path;
+        
         if (handler.body) {
             var body = handler.body;
             if (typeof body === "string") {
@@ -170,9 +179,8 @@ adapter.initialize = function(compose) {
             delete request.body;
         }
 
-
         request.messageId = queue.add(handler);
-
+        
         // 3rd arg has qos option { qos: 0|1|2 }
         // @todo check which one fit better in this case
         d("[mqtt client] Sending message..");

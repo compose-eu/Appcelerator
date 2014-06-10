@@ -1,4 +1,4 @@
-exports.definition = {
+{
     "name": "Test Phone",
     "description": "My test phone",
     "URL": null,
@@ -17,16 +17,16 @@ exports.definition = {
             }
         },
         "test": {
-            type: "sensor",
-            channels: {
+            "type": "sensor",
+            "channels": {
                 "testnumeric": {
-                    type: "Number"
+                    "type": "Number"
                 },
                 "testtext": {
-                    type: "String"
+                    "type": "String"
                 },
                 "location": {
-                    type: "String"
+                    "type": "String"
                 }
             }
         }
@@ -35,16 +35,16 @@ exports.definition = {
         "testsuite": true,
         "hashnumber": "xxxxxyyyyyzzzzzzzzzz",
         "phone_details": {
-            model: "some model",
-            os: "android",
-            api: "19"
+            "model": "some model",
+            "os": "android",
+            "api": "19"
         }
     },
     "actions": [
         {
             "name": "notify",
             "description": "Create a notification"
-        },
+        }
     ],
     "properties": []
-};
+}

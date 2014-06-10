@@ -210,7 +210,7 @@ limitations under the License.
                 delete request.body;
             }
 
-            request.messageId = queue.add(handler);
+            request.meta.messageId = queue.add(handler);
 
             d("[ws client] Sending message..");
             client.send(JSON.stringify(request));
