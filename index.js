@@ -198,9 +198,10 @@ limitations under the License.
     };
 
     var setPaths = function() {
-//        if(compose.config.platform === 'titanium') {
-//            config.platformsPath = config.platformsPath;
-//        }
+        if(compose.config.platform === 'node' || compose.config.platform === 'browser') {
+            // free definition path location
+            config.definitionsPath = "";
+        }
     };
 
     /*
