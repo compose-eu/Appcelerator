@@ -137,6 +137,9 @@ adapter.initialize = function(compose) {
 
                         d("[mqtt client] New message from topic " + topic);
                         var resp = parseResponseContent(message);
+//                        d(message);
+//                        d('---------------------------')
+//                        d(resp);
                         queue.handleResponse(resp);
                     });
 
