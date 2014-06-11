@@ -19,9 +19,9 @@ limitations under the License.
 var DEBUG = false;
 //DEBUG = true;
 
-var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[stomp client] " + m); };
     
-var mqtt = require("mqtt");
+var Stomp = require("stompjs");
 var parseUrl = require("url").parse;
 
 
@@ -76,13 +76,13 @@ adapter.initialize = function(compose) {
         host = urlinfo.hostname;
     }
 
-    compose.config.mqtt = compose.config.mqtt || {};
-    var mqttConf = {
-        proto: compose.config.mqtt.secure ? 'mqtts' : 'mqtt',
+    compose.config.stomp = compose.config.stomp || {};
+    var stompConf = {
+        proto: compose.config.stomp.secure ? 'ws' : 'wss',
         host: host || "api.servioticy.com",
-        port: compose.config.mqtt.port || "1883",
-        user: compose.config.mqtt.user || "compose",
-        password: compose.config.mqtt.password || "shines"
+        port: compose.config.stomp.port || "61623",
+        user: compose.config.stomp.user || "compose",
+        password: compose.config.stomp.password || "shines"
     };
 
     var request = {
@@ -93,8 +93,9 @@ adapter.initialize = function(compose) {
     };
 
     var topics = {
-        from: compose.config.apiKey + '/from',
-        to: compose.config.apiKey + '/to'
+        from: "/topic/" + compose.config.apiKey + '.from',
+        to: "/topic/" + compose.config.apiKey + '.to',
+        updates: "/topic/" + compose.config.apiKey + '.%soid.updates'
     };
 
     adapter.connect = function(handler, connectionSuccess, connectionFail) {
@@ -102,52 +103,46 @@ adapter.initialize = function(compose) {
         d("Connection requested");
 
         // initialize the client, but only if not connected or reconnecting
-        if (!client || (client && !client.connected && (!client.disconnecting && !client.reconnectTimer))) {
+        if (!client || (client && !client.connected)) {
 
-            d("[mqtt client] Connecting to mqtt server " +
-                    mqttConf.proto + "://" + mqttConf.user + ":" + mqttConf.password +
-                    "@" + mqttConf.host + ":" + mqttConf.port);
+            d("[stomp client] Connecting to server " +
+                    stompConf.proto + "://" + stompConf.user + ":" + stompConf.password +
+                    "@" + stompConf.host + ":" + stompConf.port);
 
-            client = mqtt.createClient(mqttConf.port, mqttConf.host, {
-                username: mqttConf.user,
-                password: mqttConf.password
-            });
+            client = Stomp.overWS(stompConf.proto + "://" + stompConf.host + ":" + stompConf.port);
 
-            client.on('close', function() {
-                d("[mqtt client] Connection closed");
-                handler.emitter.trigger('close', client);
-            });
-
-            client.on('error', function(e) {
-
-                d("[mqtt client] Connection error");
-                d(e);
-
-                connectionFail(e);
-                handler.emitter.trigger('error', e);
-            });
-
-            client.on('connect', function() {
-
-                handler.emitter.trigger('connect', client);
-
-                client.subscribe(topics.to, function() {
-                    d("[mqtt client] Subscribed to " + topics.to);
-                    client.on('message', function(topic, message, response) {
-
-                        d("[mqtt client] New message from topic " + topic);
-                        var resp = parseResponseContent(message);
-//                        d(message);
-//                        d('---------------------------')
-//                        d(resp);
-                        queue.handleResponse(resp);
+            client.connect({
+                    login: stompConf.user,
+                    passcode: stompConf.password
+                },
+                function() { //success
+                    
+                    handler.emitter.trigger('connect', client);
+                    
+                    d("[stomp client] Subscribe to " + topics.to);
+                    client.subscribe(topics.to, function(message) {
+                        d("[stomp client] New message from topic " + topics.to);
+                        
+                        message.body = JSON.parse(message.body);
+                        if(typeof message.body.messageId !== 'undefined') {
+                            message.messageId = message.body.messageId;
+                            delete message.body.messageId;
+                        }
+                        
+                        queue.handleResponse(message);
                     });
-
+                    
                     // return promise
                     connectionSuccess();
 
-                });
-            });
+                },
+                function(e) { // error
+
+                    connectionFail(e);
+                    handler.emitter.trigger('error', e);                
+                }
+            );
+           
         }
         else {
             // already connected
@@ -157,7 +152,9 @@ adapter.initialize = function(compose) {
 
     adapter.disconnect = function() {
         queue.clear();
-        client.end();
+        client.disconnect(function() {
+            // done
+        });
     };
 
     /*
@@ -181,12 +178,12 @@ adapter.initialize = function(compose) {
 
         request.messageId = queue.add(handler);
         
-        // 3rd arg has qos option { qos: 0|1|2 }
-        // @todo check which one fit better in this case
-        d("[mqtt client] Sending message..");
-        client.publish(topics.from, JSON.stringify(request), { qos: 0 /*, retain: true*/ }, function() {
-            d("[mqtt client] Message published");
-        });
+        var ropts = { 
+//            priority: 1 
+        };
+        
+        d("[stomp client] Sending message..");
+        client.send(topics.from, ropts, JSON.stringify(request));
 
     };
 };

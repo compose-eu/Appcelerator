@@ -24,7 +24,8 @@
     "dependencies": {
         "bluebird": "*",
         "mqtt": "*",
-        "ws": "*"
+        "ws": "*",
+        "stompjs": "*"
     },
     "devDependencies": {
         "jasmine-node": "*"

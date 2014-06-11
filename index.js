@@ -269,7 +269,7 @@ limitations under the License.
                     break;
                 case "browser":
                     if(window.WebSocket) {
-                        p = "websocket";
+                        p = "stomp";
                     }
                     break;
             }
@@ -285,8 +285,8 @@ limitations under the License.
      *  apiKey: '<api key>',
      *  // endpoint url
      *  url: 'http://api.servioticy.com'
-     *  // transport layer, supported list is [ http, mqtt, websocket ]
-     *  transport: 'websocket'
+     *  // transport layer, supported list is [ http, mqtt, stomp ]
+     *  transport: 'stomp'
      *  // custom module path eg `custom-path/compose.io/`
      *  modulePath: './'
      * }
@@ -388,9 +388,9 @@ limitations under the License.
     else {
 
         var deps = [
-            'bluebird',
+            'bluebird', 'stompjs',
             'utils/List', 'client', 'WebObject', 'ServiceObject',
-            'platforms/mqtt/browser', 'platforms/websocket/browser', 'platforms/http/browser'
+            'platforms/mqtt/browser', 'platforms/stomp/browser', 'platforms/http/browser'
         ];
 
         if (typeof define === 'function' && define.amd) {
@@ -407,7 +407,8 @@ limitations under the License.
             if(typeof window.require === 'undefined') {
 
                 var _requireAlias = {
-                    "bluebird": "vendors/bluebird/browser/bluebird"
+                    "bluebird": "vendors/bluebird/browser/bluebird",
+                    "stompjs": "vendors/stompjs/stomp.min",
                 };
 
                 window.__$$Compose.isReady = false;
