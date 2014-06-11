@@ -176,7 +176,6 @@ limitations under the License.
 
                     // return promise
                     connectionSuccess();
-
                 };
             }
             else {

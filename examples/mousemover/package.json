@@ -1,0 +1,14 @@
+{
+    "name": "compose-mousemover-game",
+    "author": "Luca Capra",
+    "license": "Apache 2",
+    "main": "index.js",
+    "scripts": {
+    },
+    "dependencies": {
+	"express": "*",
+	"body-parser": "*",
+	"errorhandler": "*",
+	"method-override": "*"
+    }
+}

@@ -70,6 +70,13 @@ adapter.initialize = function(compose) {
 
     var queue = this.queue;
 
+    var request = {
+        meta: {
+            authorization: compose.config.apiKey
+        },
+        body: {}
+    };
+
     var host;
     if (compose.config.url) {
         var urlinfo = parseUrl(compose.config.url);
@@ -78,7 +85,7 @@ adapter.initialize = function(compose) {
 
     compose.config.stomp = compose.config.stomp || {};
     var stompConf = {
-        proto: compose.config.stomp.secure ? 'ws' : 'wss',
+        proto: compose.config.stomp.secure ? 'wss' : 'ws',
         host: host || "api.servioticy.com",
         port: compose.config.stomp.port || "61623",
         user: compose.config.stomp.user || "compose",
@@ -94,8 +101,8 @@ adapter.initialize = function(compose) {
 
     var topics = {
         from: "/topic/" + compose.config.apiKey + '.from',
-        to: "/topic/" + compose.config.apiKey + '.to',
-        updates: "/topic/" + compose.config.apiKey + '.%soid.updates'
+        to: "/topic/" + compose.config.apiKey + '.to'
+//        ,updates: "/topic/" + compose.config.apiKey + '.%soid.updates'
     };
 
     adapter.connect = function(handler, connectionSuccess, connectionFail) {
@@ -176,7 +183,7 @@ adapter.initialize = function(compose) {
             delete request.body;
         }
 
-        request.messageId = queue.add(handler);
+        request.meta.messageId = queue.add(handler);
         
         var ropts = { 
 //            priority: 1 

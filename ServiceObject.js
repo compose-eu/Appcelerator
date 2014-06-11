@@ -1307,7 +1307,8 @@ limitations under the License.
                 wo = wo.toJson();
             }
 
-            return (new ServiceObject(wo)).create();
+            var so = new ServiceObject(wo);
+            return so.create();
         };
 
         /**

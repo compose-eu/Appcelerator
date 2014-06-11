@@ -92,12 +92,13 @@ require.config({
         "compose.io": 'compose.io/index',
         "utils/List": 'compose.io/utils/List',
         "bluebird": 'compose.io/vendors/bluebird/browser/bluebird',
+        "stompjs": 'compose.io/vendors/stompjs/stomp.min',
         "client": 'compose.io/client',
         "WebObject": 'compose.io/WebObject',
         "ServiceObject": 'compose.io/ServiceObject',
 
         "platforms/mqtt/browser": "compose.io/platforms/mqtt/browser",
-        "platforms/websocket/browser": "compose.io/platforms/websocket/browser",
+        "platforms/stomp/browser": "compose.io/platforms/stomp/browser",
         "platforms/http/browser": "compose.io/platforms/http/browser"
 
     }
@@ -127,16 +128,10 @@ compose.setup({
     url: 'http://api.servioticy.com'
 
     // transport type, one of http, mqtt, websocket
-    transport: 'websocket'
+    transport: 'mqtt'
 
     // Additional configuration to be passed to sub-modules handling data trasmission
     // can be passed by adding a properties matching the transport name
-    websocket: {
-        proto: 'ws', // or 'wss'
-        host: 'api.servioticy.com',
-        port: 8081,
-        path: ""
-    },
     mqtt: {
         proto: 'mqtt', // or 'mqtts'
         host: 'api.servioticy.com',
@@ -525,10 +520,10 @@ drone.getStream('stream name').search({
 
 ** This section is under development and changes will occur, soon **
 
-Realtime updates works only with mqtt and websocket transport types as two-way communication is available
+Realtime updates works __only__ with _mqtt_ and _stomp_ transport types as two-way communication is available
 
 At the moment, all the request made by a Service Object are broadcasted to all the Service Objects
-To get all the updates (from ALL the service objects)
+To get all the updates
 
 ```
 // register to updates
@@ -546,11 +541,7 @@ droid.off("data")
 
 #Additional notes
 
-* In order to use mqtt/websocket please setup those bridge until an alternative is available
-* * [mqtt bridge](https://gist.github.com/muka/78d91529473f293b9df9)
-* * [websocket bridge](https://gist.github.com/muka/dba612c1fe33102f32ac)
-
-Browser support has been tested on latest Firefox and Chrome (any feedback is appreciated!)
+Browser support has been tested on latest Firefox, Chrome and IE 11 (any feedback is appreciated)
 
 ##Async impl
 
@@ -575,7 +566,7 @@ Current status of the library follows the [Servioticy docs](http://docs.servioti
 
 *Subscriptions*
 
-* untested, implemented
+* partially tested, implemented
 
 *Actuations*
 

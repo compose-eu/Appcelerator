@@ -268,9 +268,7 @@ limitations under the License.
                     p = "mqtt";
                     break;
                 case "browser":
-                    if(window.WebSocket) {
-                        p = "stomp";
-                    }
+                    p = "stomp";
                     break;
             }
             compose.config.transport = p;
@@ -390,7 +388,7 @@ limitations under the License.
         var deps = [
             'bluebird', 'stompjs',
             'utils/List', 'client', 'WebObject', 'ServiceObject',
-            'platforms/mqtt/browser', 'platforms/stomp/browser', 'platforms/http/browser'
+            'platforms/stomp/browser', 'platforms/mqtt/browser', 'platforms/http/browser'
         ];
 
         if (typeof define === 'function' && define.amd) {
@@ -466,6 +464,9 @@ limitations under the License.
                 window.require = function(requiredName) {
                     if(requiredName.match(/bluebird/)) {
                         return window.Promise;
+                    }
+                    if(requiredName.match(/stompjs/i)) {
+                        return window.Stomp;
                     }
                     var moduleName = requiredName.replace(/[.\/]+/, "").replace(/\//, "_").replace(/\//, "_");
                     var module = window.__$$Compose[moduleName];

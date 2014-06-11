@@ -59,8 +59,8 @@ limitations under the License.
             http.setRequestHeader("Authorization", compose.config.apiKey);
 
             var data = null;
-            if(handler.data) {
-                data = JSON.stringify(handler.data);
+            if(handler.body) {
+                data = JSON.stringify(handler.body);
             }
 
             http.send(data);

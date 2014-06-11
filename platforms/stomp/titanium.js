@@ -15,100 +15,26 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ******************************************************************************/
 
+(function() {
 
-var DEBUG = false;
+    var stomplib = {};
 
-var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
-
-var mqtt = require("it.uhopper.mqtt");
-
-var client;
-var connected = false;
-
-
-var adapter = module.exports;
-
-adapter.initialize = function(compose) {
-	DEBUG = compose.config.debug;
-	var queue = this.queue;
-	
-	var request = {
-        meta: {
-            authorization: compose.config.apiKey
-        },
-        body: {}
-    };
-	
-    adapter.connect = function(handler, connectionSuccess, connectionFail){
-
-        d("Connection requested");
-
-        if(!client || !connected) {
-            client = mqtt.registerCallback(compose.config.apiKey, {
-                success: function(data){
-                    d("Response received");
-                    d(data);
-                    handler.emitter.trigger('connect', client);
-                    connected = true;
-                    connectionSuccess();
-                },
-                error: function(data){
-                    d("onError");
-                    d(data);
-                    connected = false;
-                    connectionFail(data);
-                },
-                callback: function(data){
-                    d("onCallback");
-                    d("notification ");
-                    d(data);
-                    queue.handleResponse({"data": data}); 
-                }
-            }); 
-        }
-
+    stomplib.initialize = function(compose) {
+        throw new compose.error.ComposeError("Titanium support for stomp has not been implemented yet. Please use mqtt instead");
     };
 
-    adapter.disconnect = function(connectionSuccess, connectionFail) {
-        mqtt.unregisterForNotification({
-            success: function(data){
-                connected = false;
-                client = null;
-                connectionSuccess(data);
-            },
-            error: function(data){
-                connected = false;
-                client = null;
-                connectionFail(data);
-            }
-        });
-    };
+//    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+//        module.exports = stomplib;
+//    }
+//    else {
+//        if (typeof define === 'function' && define.amd) {
+//            define(['compose'], function(compose) {
+//                return stomplib;
+//            });
+//        }
+//        else {
+//            window.__$$Compose.platforms_stomp_browser = stomplib;
+//        }
+//    }
 
-    adapter.subscribeToTopic = function(topic) {
-        mqtt.subscribeToTopic(topic);
-    };
-
-    adapter.unsubscribeFromTopic = function() {
-        mqtt.unSubscribeToTopic(topic);
-    };
-
-    adapter.request = function(handler) {
-//    	d("Request: ")
-//        d(handler);
-    	
-    	request.meta.method = handler.method;
-    	request.meta.url = handler.path;
-    	
-    	if(handler.body){
-    		request.body = handler.body;
-    	}
-    	
-    	d("Request:");
-        d(request);
-    	
-    	request.messageId = queue.add(handler);
-    	
-        mqtt.publishData(compose.config.apiKey, JSON.stringify(request));
-    };
-
-};
+})();
