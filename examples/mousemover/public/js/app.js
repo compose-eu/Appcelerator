@@ -1,7 +1,20 @@
 
 var debug = true;
-var apiKey = "MDNkYjI5YzYtNTY3Zi00MDJlLTgxYWUtNDEzZDhjZTE4MmFkODY3NzBmZTYtMDY1YS00ZGZjLWI4MWYtODVlNjk5NDA5NmFj";
-var transport = 'stomp';
+//var apiKey = "MDNkYjI5YzYtNTY3Zi00MDJlLTgxYWUtNDEzZDhjZTE4MmFkODY3NzBmZTYtMDY1YS00ZGZjLWI4MWYtODVlNjk5NDA5NmFj";
+var apiKey = "YjVmMWExOWMtNjFlYS00Yjc0LTk2ZjQtYWUwYzQyYmFhYWRkNDc3N2I2NjMtMWE4MS00MzZjLTlkN2MtYjBmNmY4MTc1MTE4";
+
+var composeConf = {
+    url: "http://192.168.9.243:8080",
+    apiKey: apiKey,
+    debug: debug,
+    transport: "stomp",
+    stomp: {
+        host: "192.168.9.243"
+    },
+    mqtt: {
+        host: "192.168.9.243"
+    }
+};
 
 var Game = function() {
 
@@ -27,12 +40,13 @@ var Game = function() {
             }
         }
     };
+
     // the ServiceObject instance
     this.mice = null;
-    
+
     this.lastUpdate = (new Date()).getTime();
     this.minInterval = 1000;
-    
+
     this.initialize();
 };
 
@@ -116,12 +130,8 @@ Game.prototype.getPeople = function(then) {
 Game.prototype.initialize = function() {
     var me = this;
     compose.ready(function() {
-
-        compose.setup({
-            apiKey: apiKey,
-            debug: debug,
-            transport: transport
-        });
+        
+        compose.setup(composeConf);
 
         jQuery(function($) {
             me.$ = $;
