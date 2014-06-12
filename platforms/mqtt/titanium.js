@@ -59,10 +59,24 @@ adapter.initialize = function(compose) {
                     connectionFail(data);
                 },
                 callback: function(data){
+                    
                     d("onCallback");
                     d("notification ");
                     d(data);
-                    queue.handleResponse({"data": data}); 
+                    
+                    var messageId = null;
+                    if(typeof data.headers.messageId !== 'undefined') {
+                        messageId = data.headers.messageId;
+                    }
+                    if(typeof data.messageId !== 'undefined') {
+                        messageId = data.messageId;
+                        delete data.messageId;
+                    }
+                    
+                    queue.handleResponse({
+                        data: data,
+                        messageId: messageId
+                    }); 
                 }
             }); 
         }
@@ -106,7 +120,7 @@ adapter.initialize = function(compose) {
     	d("Request:");
         d(request);
     	
-    	request.messageId = queue.add(handler);
+    	request.meta.messageId = queue.add(handler);
     	
         mqtt.publishData(compose.config.apiKey, JSON.stringify(request));
     };

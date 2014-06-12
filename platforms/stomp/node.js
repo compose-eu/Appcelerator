@@ -129,11 +129,17 @@ adapter.initialize = function(compose) {
                     d("[stomp client] Subscribe to " + topics.to);
                     client.subscribe(topics.to, function(message) {
                         d("[stomp client] New message from topic " + topics.to);
-                        
+
+                        /**
+                         * @deprecated Ensure to fix this code once the bridge is stable
+                         * */                        
                         message.body = JSON.parse(message.body);
                         if(typeof message.body.messageId !== 'undefined') {
                             message.messageId = message.body.messageId;
                             delete message.body.messageId;
+                        }
+                        if(typeof message.headers.messageId !== 'undefined') {
+                            message.messageId = message.headers.messageId;
                         }
                         
                         queue.handleResponse(message);
