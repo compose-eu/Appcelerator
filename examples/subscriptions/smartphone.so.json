@@ -24,9 +24,6 @@
                 },
                 "testtext": {
                     "type": "String"
-                },
-                "location": {
-                    "type": "String"
                 }
             }
         }
