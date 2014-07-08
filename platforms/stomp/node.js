@@ -20,10 +20,9 @@ var DEBUG = false;
 //DEBUG = true;
 
 var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[stomp client] " + m); };
-    
+
 var Stomp = require("stompjs");
 var parseUrl = require("url").parse;
-
 
 var parseResponseContent = function(message) {
 
@@ -32,7 +31,7 @@ var parseResponseContent = function(message) {
         meta: {},
         body: {}
     };
-    
+
     if(!message) {
         return response;
     }
@@ -51,13 +50,13 @@ var parseResponseContent = function(message) {
     }
 
     response.body = parts[1] ? JSON.parse(parts[1]) : {};
-    
+
     // @TODO see if it is possible to move messageId outside the body
     if(typeof response.body.messageId !== 'undefined') {
         response.messageId = response.body.messageId;
         delete response.body.messageId;
     }
-    
+
     return response;
 };
 
@@ -100,9 +99,14 @@ adapter.initialize = function(compose) {
     };
 
     var topics = {
-        from: "/topic/" + compose.config.apiKey + '.from',
-        to: "/topic/" + compose.config.apiKey + '.to'
-//        ,updates: "/topic/" + compose.config.apiKey + '.%soid.updates'
+
+        from: "/topic/" + compose.config.apiKey + '.from'
+        , to: "/topic/" + compose.config.apiKey + '.to'
+
+        , stream: function(handler) {
+            return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.updates';
+        }
+
     };
 
     adapter.connect = function(handler, connectionSuccess, connectionFail) {
@@ -112,7 +116,7 @@ adapter.initialize = function(compose) {
         // initialize the client, but only if not connected or reconnecting
         if (!client || (client && !client.connected)) {
 
-            d("[stomp client] Connecting to server " +
+            d("Connecting to server " +
                     stompConf.proto + "://" + stompConf.user + ":" + stompConf.password +
                     "@" + stompConf.host + ":" + stompConf.port);
 
@@ -123,16 +127,16 @@ adapter.initialize = function(compose) {
                     passcode: stompConf.password
                 },
                 function() { //success
-                    
+
                     handler.emitter.trigger('connect', client);
-                    
+
                     d("[stomp client] Subscribe to " + topics.to);
                     client.subscribe(topics.to, function(message) {
                         d("[stomp client] New message from topic " + topics.to);
 
                         /**
                          * @deprecated Ensure to fix this code once the bridge is stable
-                         * */                        
+                         * */
                         message.body = JSON.parse(message.body);
                         if(typeof message.body.messageId !== 'undefined') {
                             message.messageId = message.body.messageId;
@@ -141,10 +145,9 @@ adapter.initialize = function(compose) {
                         if(typeof message.headers.messageId !== 'undefined') {
                             message.messageId = message.headers.messageId;
                         }
-                        
                         queue.handleResponse(message);
                     });
-                    
+
                     // return promise
                     connectionSuccess();
 
@@ -152,10 +155,10 @@ adapter.initialize = function(compose) {
                 function(e) { // error
 
                     connectionFail(e);
-                    handler.emitter.trigger('error', e);                
+                    handler.emitter.trigger('error', e);
                 }
             );
-           
+
         }
         else {
             // already connected
@@ -177,7 +180,7 @@ adapter.initialize = function(compose) {
 
         request.meta.method = handler.method.toUpperCase();
         request.meta.url = handler.path;
-        
+
         if (handler.body) {
             var body = handler.body;
             if (typeof body === "string") {
@@ -190,14 +193,35 @@ adapter.initialize = function(compose) {
         }
 
         request.meta.messageId = queue.add(handler);
-        
-        var ropts = { 
-//            priority: 1 
+
+        var ropts = {
+//            priority: 1
         };
-        
+
         d("[stomp client] Sending message..");
         client.send(topics.from, ropts, JSON.stringify(request));
 
     };
+
+    /*
+     * @param {RequestHandler} handler
+     */
+    adapter.subscribe = function(handler) {
+
+        var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
+
+        if(typeof topic === 'function') {
+            topic = topic(handler);
+        };
+
+        d("[stomp client] Listening to " + topic);
+        client.subscribe(topic, function(message) {
+
+            d("[stomp client] New message from topic " + topic);
+            handler.emitter.trigger('data', message);
+        });
+    };
+
+
 };
 

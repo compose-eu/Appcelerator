@@ -3,4 +3,4 @@ node_modules
 definitions
 test.js
 tmp
-
+examples/subscriptions/config.ini

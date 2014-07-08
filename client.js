@@ -82,6 +82,8 @@ limitations under the License.
             }
 
             this.callbacks[event].push(callback);
+
+            return this;
         };
 
         Emitter.prototype.once = function(event, callback) {
@@ -93,6 +95,8 @@ limitations under the License.
             };
 
             this.on(event, callback2);
+
+            return this;
         };
 
         Emitter.prototype.off = function(event, callback) {
@@ -113,6 +117,8 @@ limitations under the License.
                     }
                 }
             }
+
+            return this;
         };
 
         Emitter.prototype.trigger = function(event) {
@@ -128,6 +134,8 @@ limitations under the License.
                     this.callbacks[event][i].apply(this, a);
                 }
             }
+
+            return this;
         };
 
         /**
@@ -509,7 +517,6 @@ limitations under the License.
         Client.prototype.request = function(method, path, body, success, error) {
 
             var me = this;
-
             me.requestHandler.setConf({
                 method: method,
                 path: path,
@@ -524,6 +531,24 @@ limitations under the License.
             this.connect()
                 .then(function() {
                     me.adapter().request(me.requestHandler);
+                })
+                .catch(function(err) {
+                    d("Connection error");
+                    d(err);
+                    throw new compose.error.ComposeError(err);
+                });
+        };
+
+        Client.prototype.subscribe = function(conf) {
+
+            var me = this;
+            me.requestHandler.setConf(conf);
+
+            d("[client] Add listener to topic");
+
+            this.connect()
+                .then(function() {
+                    me.adapter().subscribe && me.adapter().subscribe(me.requestHandler);
                 })
                 .catch(function(err) {
                     d("Connection error");

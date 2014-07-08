@@ -20,7 +20,7 @@ var DEBUG = false;
 //DEBUG = true;
 
 var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
-    
+
 var mqtt = require("mqtt");
 var parseUrl = require("url").parse;
 
@@ -32,7 +32,7 @@ var parseResponseContent = function(message) {
         meta: {},
         body: {}
     };
-    
+
     if(!message) {
         return response;
     }
@@ -54,7 +54,7 @@ var parseResponseContent = function(message) {
 
     /**
      * @deprecated Ensure to fix this code once the bridge is stable
-     * */    
+     * */
     // @TODO see if it is possible to move messageId outside the body
     if(typeof response.body.messageId !== 'undefined') {
         response.messageId = response.body.messageId;
@@ -62,9 +62,9 @@ var parseResponseContent = function(message) {
     }
     if(typeof message.headers.messageId !== 'undefined') {
         message.messageId = message.headers.messageId;
-    }    
-    
-    
+    }
+
+
     return response;
 };
 
@@ -102,6 +102,11 @@ adapter.initialize = function(compose) {
     var topics = {
         from: compose.config.apiKey + '/from',
         to: compose.config.apiKey + '/to'
+
+        , stream: function(handler) {
+            return "/topic/" + compose.config.apiKey + '/' + handler.container().ServiceObject.id +'/updates';
+        }
+
     };
 
     adapter.connect = function(handler, connectionSuccess, connectionFail) {
@@ -171,7 +176,7 @@ adapter.initialize = function(compose) {
 
         request.meta.method = handler.method.toUpperCase();
         request.meta.url = handler.path;
-        
+
         if (handler.body) {
             var body = handler.body;
             if (typeof body === "string") {
@@ -184,7 +189,7 @@ adapter.initialize = function(compose) {
         }
 
         request.meta.messageId = queue.add(handler);
-        
+
         // 3rd arg has qos option { qos: 0|1|2 }
         // @todo check which one fit better in this case
         d("[mqtt client] Sending message..");
@@ -193,5 +198,30 @@ adapter.initialize = function(compose) {
         });
 
     };
+
+    /*
+     * @param {RequestHandler} handler
+     */
+    adapter.subscribe = function(handler) {
+
+        var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
+
+        if(typeof topic === 'function') {
+            topic = topic(handler);
+        };
+
+        d("[stomp client] Listening to " + topic);
+        client.subscribe(topic, function() {
+            d("[mqtt client] Listening to " + topic);
+            client.on('message', function(srctopic, message, response) {
+                if(topic === srctopic) {
+                    var resp = parseResponseContent(message);
+                    handler.emitter.trigger('data', resp);
+                }
+            });
+        });
+    };
+
+
 };
 

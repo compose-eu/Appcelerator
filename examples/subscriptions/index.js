@@ -6,8 +6,11 @@ compose.setup(ini.compose);
 
 ini.port = ini.port || 9090;
 
+var streamName = 'location';
+streamName = 'position';
+
 var cli = function() {
-    
+
     var create_so = function() {
         if(!ini.soModel) {
             console.log("soModel=<path-to-json> has to be set inside config.ini");
@@ -16,19 +19,19 @@ var cli = function() {
         compose.getDefinition(ini.soModel).then(compose.create).then(function(so) {
             console.log("Created " + so.name + " - id " + so.id);
             console.log("You can specify the SO id in config.ini to use it for further subscriptions experiments");
-            
+
         }).catch(console.log);
     };
-    
+
     var sub_create = function(soid) {
         compose.load(soid).then(function(so) {
-            return so.getStream('location').getSubscriptions().refresh();
+            return so.getStream(streamName).getSubscriptions().refresh();
         })
         .then(function(list) {
 
 //            console.log(list, this.getStream("location").getSubscriptions().getList());
 
-            this.getStream('location').addSubscription({
+            this.getStream(streamName).addSubscription({
                 "callback":"http",
                 "destination": ini.subscription.url +"/"+soid+"/@latitude@/@longitude@",
                 "customFields": {
@@ -50,14 +53,18 @@ var cli = function() {
     };
 
     var sub_dropall = function(soid) {
-        compose.load(soid).then(function(so) {
-            return so.getStream('location').getSubscriptions().refresh();
+        var so;
+        compose.load(soid).then(function() {
+            so = this;
+            return so.getStream(streamName).getSubscriptions().refresh();
         })
         .then(function() {
-            var list = this.getStream("location").getSubscriptions().getList();
+            var list = so.getStream(streamName).getSubscriptions().getList();
             for(var i in list) {
                 console.log("Dropping sub " + list[i].id);
-                list[i].delete();
+                list[i].delete().catch(function(e) {
+                    console.log("An error occured!", e);
+                });
             }
         });
     };
@@ -98,7 +105,7 @@ var cli = function() {
                 longitude: 45.12346 + Math.random()
             };
             console.log(data);
-            return so.getStream('location').push(data);
+            return so.getStream(streamName).push(data);
         })
         .then(function() {
             console.log("Data sent!");
@@ -135,7 +142,7 @@ var cli = function() {
             else return false;
         return soid;
     };
-    
+
     var cmd = process.argv[2];
     switch (cmd) {
         case "so-create":
@@ -156,7 +163,7 @@ var cli = function() {
             if(!soid) {
                 console.log("Please, specify as service object ID");
                 return;
-            }            
+            }
             console.log(cmd);
             sub_listen(soid);
             break;
@@ -165,7 +172,7 @@ var cli = function() {
             if(!soid) {
                 console.log("Please, specify as service object ID");
                 return;
-            }            
+            }
             console.log(cmd);
             sub_push(soid);
             break;
@@ -174,9 +181,9 @@ var cli = function() {
             if(!soid) {
                 console.log("Please, specify as service object ID");
                 return;
-            }            
+            }
             console.log(cmd);
-            sub_dropall();
+            sub_dropall(soid);
             break;
         case "test-server":
             console.log(cmd);
@@ -185,7 +192,7 @@ var cli = function() {
         default:
 
             if(cmd) console.log(cmd + ": command unknown");
-            
+
             console.log("USAGE: node test.js <cmd>\n \
             \n\
     so-create          : create a  test service object\n\

@@ -25,10 +25,11 @@ limitations under the License.
         var Promise = compose.lib.Promise;
         var ComposeError = compose.error.ComposeError;
         var ValidationError = compose.error.ValidationError;
+        var Emitter = compose.lib.Client.Emitter;
 
         var Subscription = function() {
             if(this instanceof Subscription) {
-                var args = arguments[0] ? arguments[0] : {};
+                var args = arguments[0] && typeof arguments[0] === 'object' ? arguments[0] : {};
                 this.initialize(args);
             }
         };
@@ -99,10 +100,10 @@ limitations under the License.
                 }
 
                 var url = '/subscriptions/'+ me.id;
-                me.getClient().put(url, me.toJson(), function(data) {
+                me.container().container().getClient().put(url, me.toJson(), function(data) {
                     resolve(data);
                 }, reject);
-            });
+            }).bind(me.container().container());
         };
 
         /**
@@ -114,15 +115,15 @@ limitations under the License.
             var me = this;
             return new Promise(function(resolve, reject) {
 
-                if(!this.id) {
+                if(!me.id) {
                     throw new ComposeError("Subscription must have an id");
                 }
 
                 var url = '/'+me.container().id+'/streams/'+ me.name
                                 +'/subscriptions/'+ me.id;
 
-                me.container().getClient().delete(url, null, resolve, reject);
-            });
+                me.container().container().getClient().delete(url, null, resolve, reject);
+            }).bind(me.container().container());
         };
 
         /**
@@ -391,9 +392,11 @@ limitations under the License.
             compose.lib.WebObject.Stream.apply(this, arguments);
             this.initialize(obj);
         };
+
         compose.util.extend(Stream, compose.lib.WebObject.Stream);
 
         Stream.prototype.__$subscriptions;
+        Stream.prototype.__$pubsub = null;
 
         Stream.prototype.initialize = function(obj) {
 
@@ -405,7 +408,13 @@ limitations under the License.
             subscriptions.container(this);
             this.__$subscriptions = subscriptions;
 
+            this.__$emitter = new Emitter;
+
             return this;
+        };
+
+        Stream.prototype.emitter = function() {
+            return this.__$emitter;
         };
 
         Stream.prototype.getSubscriptions = function() {
@@ -423,7 +432,7 @@ limitations under the License.
          * Get a subscriptions by id
          *
          * @param {mixed} value The id value
-         * @param {mixed} value The key of the subscription object to match with `value`
+         * @param {mixed} key The key of the subscription object to match with `value`
          *
          * @return {Subscription} A subscription if found
          */
@@ -443,6 +452,103 @@ limitations under the License.
             object = object || {};
             return this.getSubscriptions().add(object);
         };
+
+        /**
+         * Create a pubsub subscription for the stream
+         *
+         * @return {Promise} A promise for the subscription object creation
+         */
+        Stream.prototype.subscribe = function(fn) {
+
+            var me = this;
+
+            if(!me.__$pubsub) {
+                me.__$pubsub = {
+                    callback: 'pubsub',
+                    destination: compose.config.apiKey
+                };
+            }
+
+            var listener = function(subscription) {
+                return new Promise(function(success, failure) {
+
+                    try {
+                        me.container().getClient().subscribe({
+                            topic: 'stream',
+                            emitter: me.emitter()
+                        });
+                    }
+                    catch(e) {
+                        failure(e);
+                        return;
+                    }
+
+                    if(fn && typeof fn === 'function') {
+                        me.on('data', fn);
+                    }
+
+                    success(subscription);
+                });
+            };
+
+            return this.getSubscriptions().refresh().then(function() {
+                var subscription = me.getSubscription(me.__$pubsub.callback, "callback");
+                if(!subscription) {
+                    subscription = me.addSubscription(me.__$pubsub);
+                    return subscription.create().then(listener);
+                }
+                else {
+                    return listener(subscription);
+                }
+            });
+
+        };
+
+        /**
+         * Remove a pubsub subscription for the stream
+         *
+         * @param {Function} fn Callback to be called when data is received
+         * @return {Stream} The current stream
+         */
+        Stream.prototype.unsubscribe = function(fn) {
+
+            var me = this;
+            this.getSubscriptions().refresh().then(function() {
+                var subscription = this.getSubscription(me.__$pubsub.callback, "callback");
+
+                var _clean = function() {
+                    me.off('data');
+                    me.__$pubsub = null;
+                };
+
+                if(!subscription) {
+                    _clean();
+                }
+                else {
+                    subscription.delete().then(_clean);
+                }
+            });
+
+            return this;
+        };
+
+        Stream.prototype.on = function(event, callback) {
+
+            this.emitter().on(event, callback);
+
+            return this;
+        };
+
+        Stream.prototype.off = function(event, callback) {
+
+            // for `data` event bind to the global dataReceiver
+            if(event === 'data') {
+                compose.util.receiver.unbind(this);
+            }
+
+            this.emitter().off(event, callback);
+        };
+
 
         /**
          * Prepare a list of data values formatted to be sent to the backend
@@ -1052,7 +1158,7 @@ limitations under the License.
             this.id = null;
             this.createdAt = null;
 
-            this.__$emitter = new compose.lib.Client.Emitter;
+            this.__$emitter = new Emitter;
 
             this.initialize(objdef);
         };
@@ -1253,7 +1359,7 @@ limitations under the License.
 
         /**
          * Delete a Service Object
-         * 
+         *
          * @param {String} Optional, the soid to delete
          *
          * @return {Promise} Promise of the request with a new empty so as argument

@@ -1,0 +1,22 @@
+{
+    "name": "fruit",
+    "description": "the target",
+    "URL": "",
+    "public": false,
+    "streams": {
+        "position": {
+            "description": "Position in the area",
+            "type": "sensor",
+            "channels": {
+                "x": {
+                    "type": "Number",
+                    "unit": "pixel"
+                },
+                "y": {
+                    "type": "Number",
+                    "unit": "pixel"
+                }
+            }
+        }
+    }
+}

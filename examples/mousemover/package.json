@@ -6,6 +6,7 @@
     "scripts": {
     },
     "dependencies": {
+        "compose.io": "compose-eu/Appcelerator",
 	"express": "*",
 	"body-parser": "*",
 	"errorhandler": "*",

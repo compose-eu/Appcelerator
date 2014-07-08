@@ -19,10 +19,10 @@ limitations under the License.
 
     var client = null;
     var ws = null;
-    
+
     var reconnectTimes = 5;
     var tries = reconnectTimes;
-       
+
     var DEBUG = false;
     var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[stomp client] " + m); };
 
@@ -57,9 +57,9 @@ limitations under the License.
 
     var adapter = {};
     adapter.initialize = function(compose) {
-        
+
         var Stomp = require("stompjs");
-        
+
         DEBUG = compose.config.debug;
 
         var queue = this.queue;
@@ -84,7 +84,11 @@ limitations under the License.
         var topics = {
             from: "/topic/" + compose.config.apiKey + '.from',
             to: "/topic/" + compose.config.apiKey + '.to'
-    //        ,updates: "/topic/" + compose.config.apiKey + '.%soid.updates'
+
+            , stream: function(handler) {
+                return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.updates';
+            }
+
         };
 
         var request = {
@@ -152,7 +156,7 @@ limitations under the License.
                 ws = new WebSocket(stompConf.proto + "://" + stompConf.host + ":" + stompConf.port);
 
 //                client.onerror = function(e) {
-//                    
+//
 //                    // @TODO: test properly the reconnection beahvior!
 //                    if(ws) {
 //
@@ -175,12 +179,12 @@ limitations under the License.
 //                };
 //                ws.onopen = function() {
 //                    tries = reconnectTimes;
-//                };                
-                
+//                };
+
                 client = Stomp.over(ws);
-                
+
                 client.debug = d;
-                
+
                 client.connect({
                         login: stompConf.user,
                         passcode: stompConf.password
@@ -192,9 +196,9 @@ limitations under the License.
                         d("Subscribe to " + topics.to);
                         client.subscribe(topics.to, function(message) {
                             d("New message from topic " + topics.to);
-                            
+
                             message.body = JSON.parse(message.body);
-                            
+
                             /**
                              * @deprecated Ensure to fix this code once the bridge is stable
                              * */
@@ -205,7 +209,7 @@ limitations under the License.
                             if(typeof message.headers.messageId !== 'undefined') {
                                 message.messageId = message.headers.messageId;
                             }
-                            
+
                             queue.handleResponse(message);
                         });
 
@@ -216,7 +220,7 @@ limitations under the License.
                     function(e) { // error
 
                         connectionFail(e);
-                        handler.emitter.trigger('error', e);                
+                        handler.emitter.trigger('error', e);
                     }
                 );
 
@@ -252,14 +256,33 @@ limitations under the License.
 
             request.meta.messageId = queue.add(handler);
 
-            var ropts = { 
-    //            priority: 1 
+            var ropts = {
+    //            priority: 1
             };
 
             d("Sending message..");
             client.send(topics.from, ropts, JSON.stringify(request));
 
         };
+    };
+
+    /*
+     * @param {RequestHandler} handler
+     */
+    adapter.subscribe = function(handler) {
+
+        var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
+
+        if(typeof topic === 'function') {
+            topic = topic(handler);
+        };
+
+        d("[stomp client] Listening to " + topic);
+        client.subscribe(topic, function(message) {
+
+            d("[stomp client] New message from topic " + topic);
+            handler.emitter.trigger('data', message);
+        });
     };
 
 

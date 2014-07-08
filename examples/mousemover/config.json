@@ -1,0 +1,11 @@
+{
+
+    "host": "localhost",
+    "port": 8090,
+
+    "compose": {
+        "apiKey": "MDNkYjI5YzYtNTY3Zi00MDJlLTgxYWUtNDEzZDhjZTE4MmFkODY3NzBmZTYtMDY1YS00ZGZjLWI4MWYtODVlNjk5NDA5NmFj",
+        "debug": true,
+        "transport": "stomp"
+    }
+}
