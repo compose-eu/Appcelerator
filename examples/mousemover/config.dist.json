@@ -1,0 +1,11 @@
+{
+
+    "host": "localhost",
+    "port": 8090,
+
+    "compose": {
+        "apiKey": "<your api key>",
+        "debug": true,
+        "transport": "stomp"
+    }
+}
