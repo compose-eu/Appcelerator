@@ -60,7 +60,7 @@ var parseResponseContent = function(message) {
         response.messageId = response.body.messageId;
         delete response.body.messageId;
     }
-    if(typeof message.headers.messageId !== 'undefined') {
+    if(message.headers && typeof message.headers.messageId !== 'undefined') {
         message.messageId = message.headers.messageId;
     }
 
