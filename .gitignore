@@ -1,5 +1,7 @@
 nbproject/
+
 node_modules
+examples/*/node_modules
 definitions
 test.js
 tmp
