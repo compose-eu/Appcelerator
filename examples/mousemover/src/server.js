@@ -1,7 +1,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser')
-var mgm = require("./clientManager").get();
+var mgm = require("./manager").get();
 
 var config = require('./config').config;
 

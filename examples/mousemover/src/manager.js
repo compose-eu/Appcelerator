@@ -5,8 +5,8 @@ var fs = require("fs");
 var compose = require("compose.io");
 var config = require('./config').config;
 
-//config.compose.transport = 'stomp';
-config.compose.transport = 'mqtt';
+config.compose.transport = 'stomp';
+//config.compose.transport = 'mqtt';
 config.compose.debug = true;
 //config.compose.debug = false;
 
