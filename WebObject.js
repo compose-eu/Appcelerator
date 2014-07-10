@@ -228,6 +228,13 @@ limitations under the License.
         };
 
         /**
+         * @return {ChannelsList} The list of channels 
+         */
+        Stream.prototype.getChannels = function() {
+            return this.channels;
+        };
+
+        /**
          * @param {String} name The channel name
          * @return {Object} The requested channel or null if not available
          */

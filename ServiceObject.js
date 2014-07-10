@@ -27,6 +27,11 @@ limitations under the License.
         var ValidationError = compose.error.ValidationError;
         var Emitter = compose.lib.Client.Emitter;
 
+
+        /**
+         *
+         * @constructor
+         * */
         var Subscription = function() {
             if(this instanceof Subscription) {
                 var args = arguments[0] && typeof arguments[0] === 'object' ? arguments[0] : {};
@@ -68,9 +73,8 @@ limitations under the License.
          */
         Subscription.prototype.create = function() {
             var me = this;
+            var so = me.container().container();
             return new Promise(function(resolve, reject) {
-
-                var so = me.container().container();
 
                 var url = '/'+so.id+'/streams/'+ me.container().name
                                 +'/subscriptions'+ (me.id ? '/'+me.id : '');
@@ -83,7 +87,7 @@ limitations under the License.
                     resolve && resolve(me, me.container());
 
                 }, reject);
-            }).bind(me.container().container());
+            }).bind(so);
         };
 
         /**
@@ -93,6 +97,7 @@ limitations under the License.
          */
         Subscription.prototype.update = function() {
             var me = this;
+            var so = me.container().container();
             return new Promise(function(resolve, reject) {
 
                 if(!me.id) {
@@ -100,10 +105,10 @@ limitations under the License.
                 }
 
                 var url = '/subscriptions/'+ me.id;
-                me.container().container().getClient().put(url, me.toJson(), function(data) {
+                so.getClient().put(url, me.toJson(), function(data) {
                     resolve(data);
                 }, reject);
-            }).bind(me.container().container());
+            }).bind(so);
         };
 
         /**
@@ -113,17 +118,23 @@ limitations under the License.
          */
         Subscription.prototype.delete = function() {
             var me = this;
+            var so = me.container().container();
             return new Promise(function(resolve, reject) {
 
                 if(!me.id) {
                     throw new ComposeError("Subscription must have an id");
                 }
 
-                var url = '/'+me.container().id+'/streams/'+ me.name
-                                +'/subscriptions/'+ me.id;
+                var url = '/subscriptions/'+ me.id;
 
-                me.container().container().getClient().delete(url, null, resolve, reject);
-            }).bind(me.container().container());
+                so.getClient().delete(url, null, function() {
+
+                    var stream = me.container();
+                    stream.getSubscriptions().remove(me);
+
+                    resolve();
+                }, reject);
+            }).bind(so);
         };
 
         /**
@@ -475,6 +486,7 @@ limitations under the License.
                     try {
                         me.container().getClient().subscribe({
                             topic: 'stream',
+                            stream: me,
                             emitter: me.emitter()
                         });
                     }
