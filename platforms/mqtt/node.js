@@ -51,18 +51,18 @@ var parseResponseContent = function(message) {
     }
 
     response.body = parts[1] ? JSON.parse(parts[1]) : {};
-
-    /**
-     * @deprecated Ensure to fix this code once the bridge is stable
-     * */
-    // @TODO see if it is possible to move messageId outside the body
-    if(typeof response.body.messageId !== 'undefined') {
-        response.messageId = response.body.messageId;
-        delete response.body.messageId;
-    }
-    if(message.headers && typeof message.headers.messageId !== 'undefined') {
-        message.messageId = message.headers.messageId;
-    }
+//
+//    /**
+//     * @deprecated Ensure to fix this code once the bridge is stable
+//     * */
+//    // @TODO see if it is possible to move messageId outside the body
+//    if(typeof response.body.messageId !== 'undefined') {
+//        response.messageId = response.body.messageId;
+//        delete response.body.messageId;
+//    }
+//    if(message.headers && typeof message.headers.messageId !== 'undefined') {
+//        message.messageId = message.headers.messageId;
+//    }
 
 
     return response;

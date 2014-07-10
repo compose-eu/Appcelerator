@@ -18,7 +18,7 @@ limitations under the License.
 
 var DEBUG = false;
 
-var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[mqtt client] " + m); };
 
 var mqtt = require("it.uhopper.mqtt");
 
@@ -31,14 +31,14 @@ var adapter = module.exports;
 adapter.initialize = function(compose) {
 	DEBUG = compose.config.debug;
 	var queue = this.queue;
-	
+
 	var request = {
         meta: {
             authorization: compose.config.apiKey
         },
         body: {}
     };
-	
+
     adapter.connect = function(handler, connectionSuccess, connectionFail){
 
         d("Connection requested");
@@ -59,11 +59,11 @@ adapter.initialize = function(compose) {
                     connectionFail(data);
                 },
                 callback: function(data){
-                    
+
                     d("onCallback");
                     d("notification ");
                     d(data);
-                    
+
                     var messageId = null;
                     if(typeof data.headers.messageId !== 'undefined') {
                         messageId = data.headers.messageId;
@@ -72,13 +72,13 @@ adapter.initialize = function(compose) {
                         messageId = data.messageId;
                         delete data.messageId;
                     }
-                    
+
                     queue.handleResponse({
-                        data: data,
+                        body: data,
                         messageId: messageId
-                    }); 
+                    });
                 }
-            }); 
+            });
         }
 
     };
@@ -109,19 +109,19 @@ adapter.initialize = function(compose) {
     adapter.request = function(handler) {
 //    	d("Request: ")
 //        d(handler);
-    	
+
     	request.meta.method = handler.method;
     	request.meta.url = handler.path;
-    	
+
     	if(handler.body){
     		request.body = handler.body;
     	}
-    	
+
     	d("Request:");
         d(request);
-    	
+
     	request.meta.messageId = queue.add(handler);
-    	
+
         mqtt.publishData(compose.config.apiKey, JSON.stringify(request));
     };
 

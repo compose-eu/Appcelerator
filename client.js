@@ -333,6 +333,33 @@ limitations under the License.
                 }
             };
 
+            /**
+             * Normalize the returned body
+             *
+             * @deprecated Ensure to fix this code once the bridge is stable
+             * */
+            this.normalizeBody = function(message) {
+
+                if(typeof message.body === 'string') {
+                    message.body = JSON.parse(message.body);
+                }
+
+                if(message.body && typeof message.body.messageId !== 'undefined') {
+                    message.messageId = message.body.messageId;
+                    delete message.body.messageId;
+                }
+
+                if(message.body.meta && typeof message.body.meta.messageId !== 'undefined') {
+                    message.messageId = message.body.meta.messageId;
+                    message.body = message.body.body;
+                }
+
+                if(message.headers && typeof message.headers.messageId !== 'undefined') {
+                    message.messageId = message.headers.messageId;
+                }
+
+            };
+
             this.handleResponse = function(message, raw) {
 
                 var response;
@@ -358,6 +385,8 @@ limitations under the License.
                     d(response);
                     return;
                 }
+
+                this.normalizeBody(response);
 
                 var errorResponse = this.isErrorResponse(response.body);
                 if(response.messageId) {

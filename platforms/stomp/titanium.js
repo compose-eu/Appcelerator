@@ -20,7 +20,7 @@ limitations under the License.
     var stomplib = {};
 
     stomplib.initialize = function(compose) {
-        throw new compose.error.ComposeError("Titanium support for stomp has not been implemented yet. Please use mqtt instead");
+        throw new compose.error.ComposeError("Titanium support for stomp-over-ws has not been implemented yet. Please use mqtt instead");
     };
 
 //    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
