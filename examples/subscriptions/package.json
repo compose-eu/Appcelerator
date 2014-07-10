@@ -12,7 +12,7 @@
 	"body-parser": "*",
 	"errorhandler": "*",
 	"method-override": "*",
-	"compose.io": "git+https://github.com/compose-eu/Appcelerator.git#master",
-	"ini": "*"
+	"ini": "*",
+	"commander": "*"
     }
 }
