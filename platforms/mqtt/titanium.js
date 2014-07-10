@@ -74,7 +74,7 @@ adapter.initialize = function(compose) {
                     }
 
                     queue.handleResponse({
-                        body: data,
+                        data: data,
                         messageId: messageId
                     });
                 }

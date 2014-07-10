@@ -19,7 +19,7 @@ limitations under the License.
 var DEBUG = false;
 //DEBUG = true;
 
-var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log(m); };
+var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[mqtt client] " + m); };
 
 var mqtt = require("mqtt");
 var parseUrl = require("url").parse;
@@ -51,7 +51,7 @@ var parseResponseContent = function(message) {
     }
 
     response.body = parts[1] ? JSON.parse(parts[1]) : {};
-//
+
 //    /**
 //     * @deprecated Ensure to fix this code once the bridge is stable
 //     * */
@@ -63,7 +63,6 @@ var parseResponseContent = function(message) {
 //    if(message.headers && typeof message.headers.messageId !== 'undefined') {
 //        message.messageId = message.headers.messageId;
 //    }
-
 
     return response;
 };
@@ -104,7 +103,7 @@ adapter.initialize = function(compose) {
         to: compose.config.apiKey + '/to'
 
         , stream: function(handler) {
-            return "/topic/" + compose.config.apiKey + '/' + handler.container().ServiceObject.id +'/updates';
+            return "/topic/" + compose.config.apiKey + '/' + handler.container().ServiceObject.id +'/streams/'+ handler.stream.name +'/updates';
         }
 
     };
@@ -116,7 +115,7 @@ adapter.initialize = function(compose) {
         // initialize the client, but only if not connected or reconnecting
         if (!client || (client && !client.connected && (!client.disconnecting && !client.reconnectTimer))) {
 
-            d("[mqtt client] Connecting to mqtt server " +
+            d("Connecting to mqtt server " +
                     mqttConf.proto + "://" + mqttConf.user + ":" + mqttConf.password +
                     "@" + mqttConf.host + ":" + mqttConf.port);
 
@@ -126,13 +125,13 @@ adapter.initialize = function(compose) {
             });
 
             client.on('close', function() {
-                d("[mqtt client] Connection closed");
+                d("Connection closed");
                 handler.emitter.trigger('close', client);
             });
 
             client.on('error', function(e) {
 
-                d("[mqtt client] Connection error");
+                d("Connection error");
                 d(e);
 
                 connectionFail(e);
@@ -144,12 +143,15 @@ adapter.initialize = function(compose) {
                 handler.emitter.trigger('connect', client);
 
                 client.subscribe(topics.to, function() {
-                    d("[mqtt client] Subscribed to " + topics.to);
+                    d("Subscribed to " + topics.to);
                     client.on('message', function(topic, message, response) {
 
-                        d("[mqtt client] New message from topic " + topic);
-                        var resp = parseResponseContent(message);
-                        queue.handleResponse(resp);
+                        d("New message from topic " + topic);
+                        if(topic === topics.to) {
+                            var resp = parseResponseContent(message);
+//                            console.log("#### message!", topic, resp);
+                            queue.handleResponse(resp);
+                        }
                     });
 
                     // return promise
@@ -192,9 +194,9 @@ adapter.initialize = function(compose) {
 
         // 3rd arg has qos option { qos: 0|1|2 }
         // @todo check which one fit better in this case
-        d("[mqtt client] Sending message..");
+        d("Sending message..");
         client.publish(topics.from, JSON.stringify(request), { qos: 0 /*, retain: true*/ }, function() {
-            d("[mqtt client] Message published");
+            d("Message published");
         });
 
     };
@@ -210,10 +212,12 @@ adapter.initialize = function(compose) {
             topic = topic(handler);
         };
 
-        d("[stomp client] Listening to " + topic);
+        d("Listening to " + topic);
         client.subscribe(topic, function() {
-            d("[mqtt client] Listening to " + topic);
+
+            d("Listening to " + topic);
             client.on('message', function(srctopic, message, response) {
+
                 if(topic === srctopic) {
                     var resp = parseResponseContent(message);
                     handler.emitter.trigger('data', resp);
@@ -221,7 +225,6 @@ adapter.initialize = function(compose) {
             });
         });
     };
-
 
 };
 

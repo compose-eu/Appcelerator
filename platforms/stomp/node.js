@@ -51,12 +51,6 @@ var parseResponseContent = function(message) {
 
     response.body = parts[1] ? JSON.parse(parts[1]) : {};
 
-    // @TODO see if it is possible to move messageId outside the body
-    if(typeof response.body.messageId !== 'undefined') {
-        response.messageId = response.body.messageId;
-        delete response.body.messageId;
-    }
-
     return response;
 };
 
@@ -104,7 +98,7 @@ adapter.initialize = function(compose) {
         , to: "/topic/" + compose.config.apiKey + '.to'
 
         , stream: function(handler) {
-            return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.updates';
+            return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.streams.'+ handler.stream.name +'.updates';
         }
 
     };

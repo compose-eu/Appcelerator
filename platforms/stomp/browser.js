@@ -86,9 +86,8 @@ limitations under the License.
             to: "/topic/" + compose.config.apiKey + '.to'
 
             , stream: function(handler) {
-                return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.updates';
+                return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.streams.'+ handler.stream.name +'.updates';
             }
-
         };
 
         var request = {
