@@ -130,6 +130,20 @@ limitations under the License.
             return this.at(this.size()-1);
         };
 
+        /**
+         * Loop the list calling fn on each element
+         *
+         * @param {Function<element, index>} fn A callback with the current element in the loop
+         *
+         * */
+        Enumerable.prototype.each =
+        Enumerable.prototype.forEach = function(fn) {
+            var me = this;
+            for(var i in this.getList()) {
+                var el = this.getList()[i];
+                fn.call(me, el, i);
+            }
+        };
 
         /**
          * Handles array as a list
@@ -181,17 +195,6 @@ limitations under the License.
             this.getList().push(objVal);
             return objVal;
         };
-//
-//        ArrayList.prototype.getIndex = function(value, key) {
-//            key = key || value;
-//            var list = this.getList();
-//            for(var i in list) {
-//                if(i === key || (list[i][key] && value === list[i][key])) {
-//                    return i;
-//                }
-//            }
-//            return null;
-//        };
 
         /**
          * @param {mixed} value The value to search for
@@ -212,18 +215,24 @@ limitations under the License.
             return this;
         };
 
-        ArrayList.prototype.getIndex = function(val) {
+        ArrayList.prototype.getIndex = function(val, key) {
             for (var i = 0; i < this.size(); i++) {
-                if (this.getList()[i] === val) {
+                var srcVal = this.getList()[i];
+                if(key !== undefined) {
+                    srcVal = srcVal[key];
+                }
+                if (srcVal === val) {
                     return i;
                 }
             }
             return -1;
         };
 
-        ArrayList.prototype.remove = function(name) {
-            var obj = this.get(name);
-            obj && obj.remove();
+        ArrayList.prototype.remove = function(value, key) {
+            var i = this.getIndex(value, key);
+            if(i > -1) {
+                this.getList().splice(i, 1);
+            }
             return this;
         };
 
