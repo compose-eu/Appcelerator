@@ -2,13 +2,14 @@
 var DEBUG = true;
 
 var fs = require("fs");
-var compose = require("compose.io");
+var compose = require("../../../index");
 var config = require('./config').config;
 
-config.compose.transport = 'stomp';
+//config.compose.transport = 'stomp';
 //config.compose.transport = 'mqtt';
+
 config.compose.debug = true;
-//config.compose.debug = false;
+config.compose.debug = false;
 
 compose.setup(config.compose);
 
