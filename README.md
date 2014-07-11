@@ -28,6 +28,8 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
         - [Bounding box](#bounding-box)
         - [Distance](#distance)
 - [Getting realtime updates](#getting-realtime-updates)
+        - [Listening for updates to a stream](#listening-for-updates-to-a-stream)
+        - [Listening for all the updates](#listening-for-all-the-updates)
 - [Additional notes](#additional-notes)
     - [Async impl](#async-impl)
     - [API support](#api-support)
@@ -36,7 +38,7 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 - [Docs](#docs)
 - [License](#license)
 
-<hr>
+---
 
 #Installation
 
@@ -521,7 +523,7 @@ drone.getStream('stream name').search({
 Realtime updates works __only__ with _mqtt_ and _stomp_ transport types as two-way communication is available.
 To use `http` please see the subproject `examples/subscriptions` to setup a base http server to receive subscriptions
 
-#Listening for updates to a stream
+##Listening for updates to a stream
 
 It is possible to get real time updates for a specific stream by subscribinf to the stream
 
@@ -539,9 +541,9 @@ droid.getStream('stream name').unubscribe(); // .then().catch().finally()
 ```
 
 Under the hood, the library will take care to retrieve a fresh list of available subscriptions, create a new `pubsub` subscription
-if not already available and subscribe to the dedicated topic. 
+if not already available and subscribe to the dedicated topic.
 
-#Listening for all the updates
+##Listening for all the updates
 
 In some case could be useful to receive all the notifications available, to do so use listen to the `data` event on the ServiceObject
 
