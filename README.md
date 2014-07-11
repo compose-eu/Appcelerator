@@ -44,13 +44,13 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 
 First you will need to install the native [mqtt module for Titanium](https://github.com/compose-eu/MobileSDK/tree/master/MQTT)
 
-Extract the archive to `<project>/modules` and add to your `tiapp.xml` the module reference  
+Extract the archive to `<project>/modules` and add to your `tiapp.xml` the module reference
 
 ```xml
 <modules>
     <module platform="android">it.uhopper.mqtt</module>
 </modules>
-```    
+```
 
 Add the `compose.io` javascript library inside the `Resources` folder (or `app/lib` if you use Alloy) in your project, then in the code
 
@@ -518,12 +518,32 @@ drone.getStream('stream name').search({
 
 #Getting realtime updates
 
-** This section is under development and changes will occur, soon **
+Realtime updates works __only__ with _mqtt_ and _stomp_ transport types as two-way communication is available.
+To use `http` please see the subproject `examples/subscriptions` to setup a base http server to receive subscriptions
 
-Realtime updates works __only__ with _mqtt_ and _stomp_ transport types as two-way communication is available
+#Listening for updates to a stream
 
-At the moment, all the request made by a Service Object are broadcasted to all the Service Objects
-To get all the updates
+It is possible to get real time updates for a specific stream by subscribinf to the stream
+
+```
+droid.getStream('stream name').subscribe(function(data) {
+    console.log("Stream updated!");
+    console.log(data);
+}) // .then().catch().finally()
+```
+
+To stop listening
+
+```
+droid.getStream('stream name').unubscribe(); // .then().catch().finally()
+```
+
+Under the hood, the library will take care to retrieve a fresh list of available subscriptions, create a new `pubsub` subscription
+if not already available and subscribe to the dedicated topic. 
+
+#Listening for all the updates
+
+In some case could be useful to receive all the notifications available, to do so use listen to the `data` event on the ServiceObject
 
 ```
 // register to updates

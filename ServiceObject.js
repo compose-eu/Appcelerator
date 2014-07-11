@@ -545,19 +545,11 @@ limitations under the License.
         };
 
         Stream.prototype.on = function(event, callback) {
-
             this.emitter().on(event, callback);
-
             return this;
         };
 
         Stream.prototype.off = function(event, callback) {
-
-            // for `data` event bind to the global dataReceiver
-            if(event === 'data') {
-                compose.util.receiver.unbind(this);
-            }
-
             this.emitter().off(event, callback);
         };
 
