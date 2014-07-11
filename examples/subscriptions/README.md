@@ -27,6 +27,13 @@ Create a subscription
 
 `./cli create`
 
+A flag `--type` can be to specify if the subscription has to be of type `pubsub` or `http`
+
+- `http` will create an http server (see `config.ini`) for fine tuning
+- `pubsub` will report to screen data coming from the stream topic
+
+See `config.ini` under the subscription section for further details and customization
+
 Delete a subscription(s)
 
 `./cli delete [id]`
