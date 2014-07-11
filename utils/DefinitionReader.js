@@ -55,6 +55,7 @@ limitations under the License.
             failure(new Error("Errore reading definition"));
         },
         node: function(filename, compose, success, failure) {
+
             var path = compose.util.getDefinitionsPath() + filename + ".json";
             var buffer = require('fs').readFile(path, function(err, data) {
                 if(err) {

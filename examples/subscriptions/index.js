@@ -11,6 +11,10 @@ var print = function() {
         console.log.apply(null, arguments);
 };
 
+var echo = function() {
+    console.log.apply(null, arguments);
+};
+
 var printErr = function() {
     console.error.apply(null, arguments);
 };
@@ -22,12 +26,12 @@ var die = function() {
 
 var create_so = function(definition) {
 
-    var definition = definition || ini.serviceObject.definition;
+    definition = definition || ini.serviceObject.definition;
     if(!definition) {
         die("definition=<path-to-json> has to be provided or set inside config.ini");
     }
 
-    compose.getDefinition(ini.soModel).then(compose.create).then(function(so) {
+    compose.getDefinition(definition).then(compose.create).then(function(so) {
         print("ServiceObject %s created! \nYou can specify the SO id in config.ini to use it in further subscriptions experiments", so.name);
         print("\nID: \t%s", so.id);
     }).catch(print);
@@ -125,6 +129,26 @@ var sub_dropall = function(soid, streamName, subids) {
         printErr(e);
     });
 };
+
+var sub_list = function(soid, stream) {
+
+    compose.load(soid).then(function() {
+        return this.getStream(stream).getSubscriptions().refresh();
+    })
+    .then(function() {
+
+        var list = this.getStream(stream).getSubscriptions();
+        echo("Avail subscriptions %s\n", list.size());
+        list.each(function(sub) {
+            echo("Id: %s\n%s\n\n", sub.id, JSON.stringify(sub, null, 2));
+        });
+
+    })
+    .catch(function(e) {
+        printErr("An error occured!", e);
+    });
+
+}
 
 var sub_listen = function(soid, stream, type) {
 
@@ -249,9 +273,18 @@ program
 program
     .command('so-create')
     .description('Create a Service Object')
-    .option('-d, --definition <definition>', _g('ServiceObject JSON definition', ini.serviceObject.definition), ini.serviceObject.definition)
+    .option('-d, --definition <definition>', _g('ServiceObject JSON definition', ini.serviceObject.definition))
     .action(function(){
-        create_so(program.definition);
+
+        var def = program.definition;
+        if(!def) {
+            def = ini.serviceObject.definition;
+            if(!def) {
+                die("Please specify a json definition to use as model");
+            }
+        }
+
+        create_so(def);
     });
 
 program
@@ -275,6 +308,13 @@ program
     })
     .action(function() {
         sub_create(program.soid, program.stream, program.type);
+    });
+
+program
+    .command('list')
+    .description('List subscriptions')
+    .action(function() {
+        sub_list(program.soid, program.stream);
     });
 
 program
