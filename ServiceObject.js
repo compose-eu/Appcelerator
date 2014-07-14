@@ -219,7 +219,7 @@ limitations under the License.
             var me = this;
             return new Promise(function(resolve, reject) {
 
-                var url = '/'+ me.container().id + '/actuations/'+ me.name;
+                var url = '/'+ me.container().id +'/actuations/'+ me.name;
                 me.container().getClient().post(url, null, function(data) {
 
                     me.id = data.id;
@@ -343,7 +343,6 @@ limitations under the License.
         DataBag.prototype.at = function(i) {
             return this.get(i);
         };
-
 
         /**
          * Return an object in the list. If index is not provided, the current cursor position will be used
