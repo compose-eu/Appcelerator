@@ -9,10 +9,10 @@
             "type": "sensor",
             "channels": {
                 "latitude": {
-                    "type": "String"
+                    "type": "Number"
                 },
                 "longitude": {
-                    "type": "String"
+                    "type": "Number"
                 }
             }
         },

@@ -4,7 +4,7 @@ examples/*/node_modules
 definitions
 test.js
 tmp
-examples/subscriptions/config.ini
-examples/mousemover/config.json
-examples/mousemover/soid.tmp
+examples/*/config.ini
+examples/*/config.json
+examples/*/soid.tmp
 

@@ -199,8 +199,12 @@ adapter.initialize = function(compose) {
         d("[stomp client] Listening to " + topic);
         client.subscribe(topic, function(message) {
 
+//            console.log("**************************************************");
+//            console.log(message);
+//            console.log("**************************************************");
+
             d("[stomp client] New message from topic " + topic);
-            handler.emitter.trigger('data', message);
+            handler.emitter.trigger('data', JSON.parse(message.body));
         });
     };
 

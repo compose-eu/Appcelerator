@@ -264,12 +264,10 @@ limitations under the License.
 
         d("[stomp client] Listening to " + topic);
         client.subscribe(topic, function(message) {
-
             d("[stomp client] New message from topic " + topic);
-            handler.emitter.trigger('data', message);
+            handler.emitter.trigger('data', JSON.parse(message.body));
         });
     };
-
 
     if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         module.exports = adapter;
