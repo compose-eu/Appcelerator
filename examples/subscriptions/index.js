@@ -66,7 +66,7 @@ var sub_create = function(soid, streamName, type) {
 
                 subDefinition = {
                     "callback":"http",
-                    "destination": ini.subscription.url + "/" + soid + "/" + params.join("/"),
+                    "destination": ini.subscription.url + "/" + soid + "/" + streamName + "/" + params.join("/"),
                     "customFields": {
                         "method":"GET"
                     }
@@ -113,14 +113,14 @@ var sub_dropall = function(soid, streamName, subids) {
         for(var i in list) {
 
             var item = list[i];
-
             if(!item || !item.id) {
                 continue;
             }
 
-            print("Dropping subscription %s", item);
+            var _sid = item.id;
+            print("Dropping subscription %s", _sid);
             item.delete().catch(function(e) {
-                printErr("An error occured (" + item.id + ")\n", e);
+                printErr("An error occured (" + _sid + ")\n", e);
             });
 
         }
@@ -140,7 +140,7 @@ var sub_list = function(soid, stream) {
         var list = this.getStream(stream).getSubscriptions();
         echo("Avail subscriptions %s\n", list.size());
         list.each(function(sub) {
-            echo("Id: %s\n%s\n\n", sub.id, JSON.stringify(sub, null, 2));
+            echo("Id: %s\n%s\n\n", sub.id, sub.toString());
         });
 
     })
@@ -184,17 +184,40 @@ var sub_listen = function(soid, stream, type) {
                 host = ini.subscription.host || '0.0.0.0'
             ;
 
-            app.get(/([a-z0-9]+)\/(.*)/i, function (req, res) {
+            app.get(/([a-z0-9]+)\/([a-z0-9_]+)\/(.*)/i, function (req, res) {
 
-                console.log("Received request!");
-                console.log("SO id " + req.params[0]);
-                console.log("Params " + req.params[1].split('/'));
 
                 res.send(200);
 //                res.send(200, "<h1>Received request</h1> <p> SO id: "+ req.params[0]
 //                                +" <pre>"
 //                                + JSON.stringify(req.params[1].split('/'), null, 2)
 //                                + "</pre>");
+
+
+                compose.load(soid).then(function(so) {
+
+                    var data = {};
+                    var _params = req.params[2].split('/');
+                    var i = 0;
+                    so.getStream(stream).getChannels().each(function(channel) {
+                        if(typeof _params[i] !== 'undefined') {
+                            data[channel] = _params[i];
+                        }
+                        i++;
+                    });
+
+                    print("Received request!");
+                    print("SO id: " + req.params[0]);
+                    print("Stream: " + req.params[1]);
+                    print("Data: ", data);
+
+                    console.log({
+                        soid: req.params[0],
+                        stream: req.params[1],
+                        params: data
+                    });
+                })
+
             });
 
             app.use(methodOverride());
@@ -239,7 +262,7 @@ var sub_push = function(soid, streamName) {
                 }
             });
 
-            return so.getStream(streamName).push(data);
+            return so.getStream(streamName).push(data, new Date);
         })
         .then(function() {
             print("Data sent!");

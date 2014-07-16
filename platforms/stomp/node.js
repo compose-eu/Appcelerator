@@ -196,7 +196,6 @@ adapter.initialize = function(compose) {
             topic = topic(handler);
         };
 
-
         var uuid = handler.uuid || topic
         queue.add({
             handler: handler,
