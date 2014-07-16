@@ -1,7 +1,7 @@
 
 var express = require('express');
 var bodyParser = require('body-parser')
-var mgm = require("./manager").get();
+var manager = require("./manager").get();
 
 var config = require('./config').config;
 
@@ -10,7 +10,7 @@ var log = function() {
     for(var i in arguments)
         a.push(arguments[i]);
 
-    console.log(a);
+    console.log.apply(null, a);
 };
 
 var app = express();
@@ -26,13 +26,20 @@ module.exports.start = function() {
     log("Starting");
 
     app.get("/config.json", function(req, res) {
-        res.send(config);
+        manager.getSo(function(err, so) {
+
+            if(so) {
+                config.targetSo = so.id;
+            }
+
+            res.send(config);
+        });
     });
 
     app.post("/clients/add", function(req, res) {
         if(req.param('soid')) {
             log("Client add " + req.param('soid'));
-            mgm.addClient(req.param('soid'));
+            manager.addClient(req.param('soid'));
         }
         res.send(200);
     });

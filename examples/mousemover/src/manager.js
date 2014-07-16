@@ -8,7 +8,7 @@ var config = require('./config').config;
 //config.compose.transport = 'stomp';
 //config.compose.transport = 'mqtt';
 
-config.compose.debug = true;
+//config.compose.debug = true;
 config.compose.debug = false;
 
 compose.setup(config.compose);
@@ -29,22 +29,57 @@ var Manager = function() {
 Manager.prototype.initialize = function() {
     var me = this;
     this.getSo(function(err, so) {
+
         if(err) {
             me.log("An error occured", err);
             return;
         }
+
+
+        setInterval(function() {
+            var p = me.hasPlayers();
+            if(p) {
+                me.log("Got players, moving target");
+                me.moveTarget();
+            }
+        }, 3000);
+
     });
 
 };
 
+Manager.prototype.moveTarget = function() {
+    var me = this;
+
+    var x = Math.round(Math.random() * 1000);
+    var y = Math.round(Math.random() * 1000);
+
+    this.getSo(function(err, so) {
+
+        so.getStream('position').push({
+            x: x,
+            y: x
+        }).then(function() {
+            me.log("Sent new position ", [x, y] );
+        });
+    })
+};
+
+Manager.prototype.hasPlayers = function() {
+    for(var i in this.clients)
+        return true;
+
+    return false;
+}
+
 Manager.prototype.log = function() {
     if(this.debug) {
 
-        var a = ["[Manager: ]"];
+        var a = ["Manager: "];
         for(var i in arguments)
             a.push(arguments[i]);
 
-        console.log(a);
+        console.log.apply(null, a);
     }
 };
 

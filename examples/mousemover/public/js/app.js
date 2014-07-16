@@ -1,5 +1,5 @@
 
-var debug = false;
+var DEBUG = true;
 
 var Game = function() {
 
@@ -50,7 +50,7 @@ Game.prototype.error = function(msg) {
 };
 
 Game.prototype.log = function() {
-    debug && console.info.apply(null, arguments);
+    DEBUG && console.info.apply(null, arguments);
 };
 
 Game.prototype.getMice = function(then) {
@@ -106,18 +106,25 @@ Game.prototype.updatePosition = function(ev) {
 Game.prototype.start = function() {
 
     var me = this;
-    me.getMice(function() {
+    me.getTarget(function(){
 
-        me.$(window).on('mousemove', function(e) {
-            me.updatePosition(e);
+        me.log("got target, subscribe to position");
+
+        me.target.getStream('position').subscribe(function(data) {
+            me.log("Target DATA!");
+            me.log(data);
         });
 
-        me.getPeople(function() {
+        me.getMice(function() {
+
+            me.$(window).on('mousemove', function(e) {
+                me.updatePosition(e);
+            });
+
+            // me.getPeople(function() {});
 
         });
-
     });
-
 };
 
 Game.prototype.getPeople = function(then) {
@@ -128,6 +135,26 @@ Game.prototype.getPeople = function(then) {
 //        .catch(this.error);
 };
 
+Game.prototype.getTarget = function(then) {
+    var me = this;
+
+    if(me.target) {
+        then(me.target);
+        return ;
+    }
+
+    me.log("Load target " + me.config.targetSo);
+    compose.load(me.config.targetSo)
+        .then(function(so) {
+            me.target = so;
+            then(so);
+        })
+        .catch(function(e) {
+            me.error(e);
+            then(null);
+        });
+};
+
 Game.prototype.initialize = function() {
     var me = this;
     compose.ready(function() {
@@ -136,6 +163,7 @@ Game.prototype.initialize = function() {
 
                 compose.setup(config.compose);
 
+                me.config = config;
                 me.$ = $;
                 me.start();
 

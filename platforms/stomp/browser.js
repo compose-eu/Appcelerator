@@ -249,25 +249,29 @@ limitations under the License.
             client.send(topics.from, ropts, JSON.stringify(request));
 
         };
-    };
 
-    /*
-     * @param {RequestHandler} handler
-     */
-    adapter.subscribe = function(handler) {
+        /*
+         * @param {RequestHandler} handler
+         */
+        adapter.subscribe = function(handler) {
 
-        var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
+            var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
 
-        if(typeof topic === 'function') {
-            topic = topic(handler);
+            if(typeof topic === 'function') {
+                topic = topic(handler);
+            };
+
+//            console.warn("register! ", topic);
+            d("[stomp client] Listening to " + topic);
+            client.subscribe(topic, function(message) {
+                d("[stomp client] New message from topic " + topic);
+//                console.warn("got data! ", message);
+                handler.emitter.trigger('data', JSON.parse(message.body));
+            });
         };
 
-        d("[stomp client] Listening to " + topic);
-        client.subscribe(topic, function(message) {
-            d("[stomp client] New message from topic " + topic);
-            handler.emitter.trigger('data', JSON.parse(message.body));
-        });
     };
+
 
     if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
         module.exports = adapter;
