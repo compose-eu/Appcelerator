@@ -484,6 +484,7 @@ limitations under the License.
 
                     try {
                         me.container().getClient().subscribe({
+                            uuid: 'stream.' + me.name,
                             topic: 'stream',
                             stream: me,
                             emitter: me.emitter()

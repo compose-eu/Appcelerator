@@ -215,33 +215,45 @@ var sub_listen = function(soid, stream, type) {
 
 var sub_push = function(soid, streamName) {
 
-    compose.load(soid).then(function(so) {
+    var lock = false;
+    var _sub_push = function() {
 
-        var data = {};
-        so.getStream(streamName).getChannels().each(function(channel, name) {
+        if(lock) return;
+        lock = true;
 
-            switch(channel.type) {
-                case "Number":
-                    data[name] = 1.23 + (Math.random() * 100);
-                    break;
-                case "String":
-                    data[name] = "In fermentum nulla sed nulla pellentesque, eget venenatis massa sodales";
-                    break;
-                case "Boolean":
-                    data[name] = ((Math.random() * 10) > 5);
-                    break;
-            }
+        compose.load(soid).then(function(so) {
+
+            var data = {};
+            so.getStream(streamName).getChannels().each(function(channel, name) {
+
+                switch(channel.type) {
+                    case "Number":
+                        data[name] = 1.23 + (Math.random() * 100);
+                        break;
+                    case "String":
+                        data[name] = "In fermentum nulla sed nulla pellentesque, eget venenatis massa sodales";
+                        break;
+                    case "Boolean":
+                        data[name] = ((Math.random() * 10) > 5);
+                        break;
+                }
+            });
+
+            return so.getStream(streamName).push(data);
+        })
+        .then(function() {
+            print("Data sent!");
+        })
+        .catch(function(e) {
+            printErr("An error occured", e);
+        })
+        .finally(function() {
+            lock = false;
         });
+    };
 
-        return so.getStream(streamName).push(data);
-    })
-    .then(function() {
-        print("Data sent!");
-    })
-    .catch(function(e) {
-        printErr("An error occured", e);
-    });
-
+    setInterval(_sub_push, 5000);
+    _sub_push();
 };
 
 var _g = function(str, o) {

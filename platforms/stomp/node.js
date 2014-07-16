@@ -196,6 +196,14 @@ adapter.initialize = function(compose) {
             topic = topic(handler);
         };
 
+
+        var uuid = handler.uuid || topic
+        queue.add({
+            handler: handler,
+            keep: true,
+            uuid: uuid
+        });
+
         d("[stomp client] Listening to " + topic);
         client.subscribe(topic, function(message) {
 
@@ -204,7 +212,9 @@ adapter.initialize = function(compose) {
 //            console.log("**************************************************");
 
             d("[stomp client] New message from topic " + topic);
-            handler.emitter.trigger('data', JSON.parse(message.body));
+//            handler.emitter.trigger('data', JSON.parse(message.body));
+            message.messageId = uuid;
+            queue.handleResponse(message);
         });
     };
 

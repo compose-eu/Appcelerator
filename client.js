@@ -289,7 +289,7 @@ limitations under the License.
                     qItem.keep = (typeof qItem.keep !== 'undefined') ? qItem.keep : false;
                 }
 
-                var uuid = this.guid();
+                var uuid = qItem.uuid || this.guid();
                 queue[uuid] = qItem;
 
                 queueSize++;
@@ -305,7 +305,7 @@ limitations under the License.
             };
 
             this.remove = function(uuid) {
-                if(queue[uuid]) {
+                if(queue[uuid] && !queue[uuid].keep) {
                     delete queue[uuid];
                     if(queueSize > 0) queueSize--;
                 }
