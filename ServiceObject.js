@@ -484,10 +484,13 @@ limitations under the License.
 
                     try {
                         me.container().getClient().subscribe({
-                            uuid: 'stream.' + me.name,
+                            uuid: me.container().id + '.stream.' + me.name,
                             topic: 'stream',
                             stream: me,
-                            emitter: me.emitter()
+                            emitter: me.emitter(),
+                            onQueueData: function() {
+
+                            }
                         });
                     }
                     catch(e) {
@@ -545,11 +548,17 @@ limitations under the License.
         };
 
         Stream.prototype.on = function(event, callback) {
+            if(event === 'data') {
+                compose.util.receiver.bind(this, this.container().id + '.stream.' + this.name);
+            }
             this.emitter().on(event, callback);
             return this;
         };
 
         Stream.prototype.off = function(event, callback) {
+            if(event === 'data') {
+                compose.util.receiver.unbind(this, this.container().id + '.stream.' + this.name);
+            }
             this.emitter().off(event, callback);
         };
 

@@ -145,7 +145,12 @@ limitations under the License.
          * @constructor
          * */
         var DataReceiver = function() {
-            this.registry = [];
+
+            this.defaultTopic = '*';
+
+            this.registry = {};
+            this.registry[this.defaultTopic] = [];
+
         };
 
         /**
@@ -154,10 +159,11 @@ limitations under the License.
          * @argument {ServiceObject} so A ServiceObject instance
          * @return {Number} The index in the list or -1 if not found
          * */
-        DataReceiver.prototype.getIndex = function(so) {
-            var l = this.registry.length;
+        DataReceiver.prototype.getIndex = function(so, topic) {
+            topic = topic || this.defaultTopic;
+            var l = this.registry[topic].length;
             for(var i = 0; i < l; i++) {
-                if(this.registry[i] === so) {
+                if(this.registry[topic][i] === so) {
                     return i;
                 }
             }
@@ -168,9 +174,11 @@ limitations under the License.
          * Add SO to list
          *
          * */
-        DataReceiver.prototype.bind = function(so) {
-            if(this.getIndex(so) < 0) {
-                this.registry.push(so);
+        DataReceiver.prototype.bind = function(so, topic) {
+            topic = topic || this.defaultTopic;
+            if(this.getIndex(so, topic) < 0) {
+                this.registry[topic] = this.registry[topic] || [];
+                this.registry[topic].push(so);
             }
         };
 
@@ -178,10 +186,13 @@ limitations under the License.
          * Remove SO from list
          *
          * */
-        DataReceiver.prototype.unbind = function(so) {
-            var i = this.getIndex(so);
+        DataReceiver.prototype.unbind = function(so, topic) {
+            topic = topic || this.defaultTopic;
+            var i = this.getIndex(so, topic);
             if(i > -1) {
-                this.registry.splice(i,1);
+                this.registry[topic].splice(i,1);
+                if(!this.registry[topic])
+                    delete this.registry[topic];
             }
         };
 
@@ -192,11 +203,23 @@ limitations under the License.
          * @params {mixed} data for the event
          *
          * */
-        DataReceiver.prototype.notify = function(event) {
-            var l = this.registry.length;
+        DataReceiver.prototype.notify = function(topic, event) {
+
+            topic = topic || this.defaultTopic;
+            var l = this.registry[topic].length;
+
+            var args = (function() {
+                var _a = [];
+                for(var i in arguments) {
+                    if(i === 0) continue;
+                    _a.push(arguments[i]);
+                }
+               return  _a;
+            })();
+
             for(var i = 0; i < l; i++) {
-                var emitter = this.registry[i].emitter();
-                emitter && emitter.trigger.apply(emitter, arguments);
+                var emitter = this.registry[topic][i].emitter();
+                emitter && emitter.trigger.apply(emitter, args);
             }
         };
 
@@ -280,13 +303,15 @@ limitations under the License.
                     qItem = {
                         created: _now, // creation time
                         handler: obj, // the request handler
-                        keep: false // keep forever (eg. for on('data') callbacks)
+                        keep: false, // keep forever (eg. for on('data') callbacks)
+                        topic: null
                     };
                 }
                 else {
                     qItem = obj;
                     qItem.created = qItem.created || _now;
                     qItem.keep = (typeof qItem.keep !== 'undefined') ? qItem.keep : false;
+                    qItem.topic = qItem.topic || null;
                 }
 
                 var uuid = qItem.uuid || this.guid();
@@ -398,7 +423,13 @@ limitations under the License.
                             handler.emitter.trigger('error', response.body);
                         }
                         else {
-                            handler.emitter.trigger('success', response.body);
+                            //a callback is provided to handle the dispatch the event
+                            if(handler.onQueueData && typeof handler.onQueueData === 'function') {
+                                handler.onQueueData.call(handler, response, message);
+                            }
+                            else {
+                                handler.emitter.trigger('success', response.body);
+                            }
                         }
 
                         d("[queue manager] Message found, id " + response.messageId);
@@ -415,6 +446,18 @@ limitations under the License.
                 this.receiver() && this.receiver().notify('data', response, message);
 
                 return false;
+            };
+
+            this.registerSubscription = function(topic, handler) {
+
+                var uuid = handler.uuid || topic;
+                this.add({
+                    handler: handler,
+                    keep: true,
+                    uuid: uuid,
+                });
+                
+                return uuid;
             };
 
         };

@@ -191,27 +191,15 @@ adapter.initialize = function(compose) {
     adapter.subscribe = function(handler) {
 
         var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
-
         if(typeof topic === 'function') {
             topic = topic(handler);
         };
 
-        var uuid = handler.uuid || topic
-        queue.add({
-            handler: handler,
-            keep: true,
-            uuid: uuid
-        });
+        var uuid = queue.registerSubscription(topic, handler);
 
         d("[stomp client] Listening to " + topic);
         client.subscribe(topic, function(message) {
-
-//            console.log("**************************************************");
-//            console.log(message);
-//            console.log("**************************************************");
-
             d("[stomp client] New message from topic " + topic);
-//            handler.emitter.trigger('data', JSON.parse(message.body));
             message.messageId = uuid;
             queue.handleResponse(message);
         });
