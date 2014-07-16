@@ -1,11 +1,10 @@
 nbproject/
-
 node_modules
 examples/*/node_modules
 definitions
 test.js
 tmp
-
 examples/subscriptions/config.ini
 examples/mousemover/config.json
 examples/mousemover/soid.tmp
+
