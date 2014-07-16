@@ -250,7 +250,6 @@ limitations under the License.
 
         };
 
-
         /*
          * @param {RequestHandler} handler
          */
@@ -262,9 +261,11 @@ limitations under the License.
                 topic = topic(handler);
             };
 
+            console.warn("register! ", topic);
             d("[stomp client] Listening to " + topic);
             client.subscribe(topic, function(message) {
                 d("[stomp client] New message from topic " + topic);
+                console.warn("got data! ", message);
                 handler.emitter.trigger('data', JSON.parse(message.body));
             });
         };
