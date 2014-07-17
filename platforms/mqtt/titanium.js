@@ -29,14 +29,26 @@ var connected = false;
 var adapter = module.exports;
 
 adapter.initialize = function(compose) {
-	DEBUG = compose.config.debug;
-	var queue = this.queue;
 
-	var request = {
+    DEBUG = compose.config.debug;
+    var queue = this.queue;
+
+    var request = {
         meta: {
             authorization: compose.config.apiKey
         },
         body: {}
+    };
+
+    var topics = {
+
+        from: "/topic/" + compose.config.apiKey + '.from'
+        , to: "/topic/" + compose.config.apiKey + '.to'
+
+        , stream: function(handler) {
+            return "/topic/" + compose.config.apiKey + '.' + handler.container().ServiceObject.id +'.streams.'+ handler.stream.name +'.updates';
+        }
+
     };
 
     adapter.connect = function(handler, connectionSuccess, connectionFail){
@@ -123,6 +135,34 @@ adapter.initialize = function(compose) {
     	request.meta.messageId = queue.add(handler);
 
         mqtt.publishData(compose.config.apiKey, JSON.stringify(request));
+    };
+
+
+    /*
+     * @param {RequestHandler} handler
+     */
+    adapter.subscribe = function(handler) {
+
+        throw new Exception("Not implemented yet!");
+
+        var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
+        if(typeof topic === 'function') {
+            topic = topic(handler);
+        };
+
+        var uuid = queue.registerSubscription(topic, handler);
+
+        d("[stomp client] Listening to " + topic);
+        client.subscribeToTopic(topic);
+
+        client.on('message', function(srctopic, message, response) {
+            if(topic === srctopic) {
+                d("[stomp client] New message from topic " + topic);
+                message.messageId = uuid;
+                queue.handleResponse(message);
+            }
+        });
+
     };
 
 };

@@ -207,24 +207,26 @@ adapter.initialize = function(compose) {
     adapter.subscribe = function(handler) {
 
         var topic = topics[ handler.topic ] ? topics[ handler.topic ] : handler.topic;
-
         if(typeof topic === 'function') {
             topic = topic(handler);
         };
 
-        d("Listening to " + topic);
-        client.subscribe(topic, function() {
+        var uuid = queue.registerSubscription(topic, handler);
 
-            d("Listening to " + topic);
+        d("[stomp client] Listening to " + topic);
+        client.subscribe(topic, function(message) {
             client.on('message', function(srctopic, message, response) {
-
                 if(topic === srctopic) {
-                    var resp = parseResponseContent(message);
-                    handler.emitter.trigger('data', resp);
+                    d("[stomp client] New message from topic " + topic);
+                    message.messageId = uuid;
+                    queue.handleResponse(message);
                 }
             });
         });
     };
+
+
+
 
 };
 
