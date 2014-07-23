@@ -126,11 +126,14 @@ compose.setup({
     // api key
     apiKey: '<api key>',
 
+    // transport type, one of http, mqtt, stomp
+    transport: 'mqtt'
+
+    // All optional from here on
+    
     // Compose API endpoint
     url: 'http://api.servioticy.com'
 
-    // transport type, one of http, mqtt, websocket
-    transport: 'mqtt'
 
     // Additional configuration to be passed to sub-modules handling data trasmission
     // can be passed by adding a properties matching the transport name
