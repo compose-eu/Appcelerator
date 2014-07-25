@@ -10,7 +10,8 @@
         "test": "test"
     },
     "scripts": {
-        "test": "jasmine-node test/spec/  --captureExceptions"
+        "test": "jasmine-node test/spec/  --captureExceptions",
+	"jsdoc": "jsdoc ./ -c=jsdoc.json -l -r"
     },
     "keywords": [
         "compose",
@@ -24,10 +25,37 @@
     "dependencies": {
         "bluebird": "*",
         "mqtt": "*",
-        "ws": "*",
         "stompjs": "*"
     },
     "devDependencies": {
-        "jasmine-node": "*"
+        "jasmine-node": "*",
+        "browserify-shim": "*"
+
+    },
+    "browserify": {
+        "transform": [ "browserify-shim" ]
+    },
+    "browser": {
+        "index": "./index.js",
+        "utils/List": "./utils/List.js",
+        "client": "./client.js",
+        "WebObject": "./WebObject.js",
+        "ServiceObject": "./ServiceObject.js",
+        "platforms/stomp/browser": "./platforms/stomp/browser.js",
+        "platforms/mqtt/browser": "./platforms/mqtt/browser.js",
+        "platforms/http/browser": "./platforms/http/browser.js",
+        "stompjs": "./vendors/stompjs/stomp.min.js"
+    },
+    "browserify-shim": {
+        "client" :  {
+            "depends": [
+                "platforms/stomp/browser",
+                "platforms/http/browser",
+                "platforms/mqtt/browser"
+            ]
+        },
+        "WebObject"    :  { "depends": [ "utils/List" ] },
+        "ServiceObject"    :  { "depends": [ "WebObject", "client" ] },
+        "index"    :  { "exports": "compose", "depends": [ "ServiceObject" ] }
     }
 }

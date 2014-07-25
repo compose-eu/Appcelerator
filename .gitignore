@@ -7,4 +7,4 @@ tmp
 examples/*/config.ini
 examples/*/config.json
 examples/*/soid.tmp
-
+bundle.js

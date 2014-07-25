@@ -110,6 +110,9 @@ Once done, just request the module
 
 `var compose = require('compose.io')`
 
+The library is also already configured to be used with `browserify`.
+
+
 #Library configuration
 
 The minimal configuration required is the apiKey to access the API.
