@@ -1,0 +1,18 @@
+{
+    "destination": "./docs",
+    "tags": {
+        "allowUnknownTags": true
+    },
+    "source": {
+	"exclude": [ "node_modules", "examples", "vendors", "tools" ],
+        "includePattern": ".+\\.js(doc)?$",
+        "excludePattern": "(^|\\/|\\\\)_"
+    },
+    "plugins": [],
+    "templates": {
+        "cleverLinks": false,
+        "monospaceLinks": false
+    }
+}
+
+
