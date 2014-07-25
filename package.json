@@ -36,7 +36,7 @@
         "transform": [ "browserify-shim" ]
     },
     "browser": {
-        "index": "./index.js",
+        "compose.io": "./index.js",
         "utils/List": "./utils/List.js",
         "client": "./client.js",
         "WebObject": "./WebObject.js",
@@ -54,8 +54,8 @@
                 "platforms/mqtt/browser"
             ]
         },
-        "WebObject"    :  { "depends": [ "utils/List" ] },
-        "ServiceObject"    :  { "depends": [ "WebObject", "client" ] },
-        "index"    :  { "exports": "compose", "depends": [ "ServiceObject" ] }
+        "WebObject"     :  { "depends": [ ] },
+        "ServiceObject" :  { "depends": [ ] },
+        "compose.io"    :  { "exports": "compose", "depends": [ "ServiceObject", "utils/List", "WebObject", "client" ] }
     }
 }

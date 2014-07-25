@@ -110,8 +110,9 @@ Once done, just request the module
 
 `var compose = require('compose.io')`
 
-The library is also already configured to be used with `browserify`.
+The library is also already configured to be used with `browserify`. To generate the whole library as a bundle use eg.
 
+`browserify index.js > compose-bundle.js`
 
 #Library configuration
 
