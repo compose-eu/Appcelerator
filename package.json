@@ -28,12 +28,9 @@
         "stompjs": "*"
     },
     "devDependencies": {
-        "jasmine-node": "*",
-        "browserify-shim": "*"
-
+        "jasmine-node": "*"
     },
     "browserify": {
-        "transform": [ "browserify-shim" ]
     },
     "browser": {
         "compose.io": "./index.js",
@@ -45,17 +42,5 @@
         "platforms/mqtt/browser": "./platforms/mqtt/browser.js",
         "platforms/http/browser": "./platforms/http/browser.js",
         "stompjs": "./vendors/stompjs/stomp.min.js"
-    },
-    "browserify-shim": {
-        "client" :  {
-            "depends": [
-                "platforms/stomp/browser",
-                "platforms/http/browser",
-                "platforms/mqtt/browser"
-            ]
-        },
-        "WebObject"     :  { "depends": [ ] },
-        "ServiceObject" :  { "depends": [ ] },
-        "compose.io"    :  { "exports": "compose", "depends": [ "ServiceObject", "utils/List", "WebObject", "client" ] }
     }
 }
