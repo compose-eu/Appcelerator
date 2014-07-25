@@ -183,12 +183,21 @@ limitations under the License.
         };
 
         Actuation.prototype.__$container;
-
+        /**
+         *
+         * @param {Stream} Optional, a Stream object
+         * @returns {Stream} The parent object
+         */
         Actuation.prototype.container = function(o) {
             this.__$container = o || this.__$container;
             return this.__$container;
         };
 
+        /**
+         * Set the values of the object passed as argument
+         *
+         * @param {Object} object A plain object with actuations properties
+         */
         Actuation.prototype.initialize = function(object) {
             for(var i in object) {
                 this[i] = object[i];
