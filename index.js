@@ -385,6 +385,37 @@ limitations under the License.
 
 
         /**
+         * Turn debug on or off.
+         * If an integer is provided there will be logging only for some components
+         *  - debug < 15   library base logs
+         *  - debug >= 15  client log
+         *  - debug >=  20 adapters log
+         * @param {Boolean} debug Set to true to turn it on, false otherwise
+         * */
+        compose.setDebug = function(debug) {
+
+                compose.config.debug = debug;
+
+                if(compose.config.debug) {
+                    if(!compose.config.platform.titanium)
+                        compose.lib.Promise && compose.lib.Promise.longStackTraces();
+                }
+
+            };
+
+        /**
+         *
+         * @param {String} model
+         * @return {Promise<Function(Object)>} a promise wtih a future new service object based on model definition
+         */
+        compose.getDefinition = function(model) {
+            var r = compose.util.setupModule("utils/DefinitionReader");
+            return r.read(model);
+        };
+
+
+
+        /**
          * Initialize the module. Available options are
          * {
          *  // api key
@@ -474,63 +505,35 @@ limitations under the License.
                     };
                     selectPreferredTransport();
 
-                    setDebug(config.debug);
+                    instance.setDebug(config.debug);
 
-                    compose.util.List = compose.util.setupModule("utils/List");
+                    instance.util.List = instance.util.setupModule("utils/List");
 
-                    compose.lib.Promise = compose.util.getPromiseLib();
+                    instance.lib.Promise = instance.util.getPromiseLib();
 
-                    if(!compose) {
-                        throw new compose.error.ComposeError("compose.io module reference not provided, quitting..");
+                    if(!instance) {
+                        throw new instance.error.ComposeError("compose.io module reference not provided, quitting..");
                     }
 
-                    compose.lib.Client = compose.util.setupModule("client");
-                    compose.util.queueManager = compose.lib.Client.queueManager;
+                    instance.lib.Client = instance.util.setupModule("client");
+                    instance.util.queueManager = instance.lib.Client.queueManager;
 
                     // initialize & expose WebObject module
-                    compose.lib.WebObject = compose.util.setupModule("WebObject");
-                    compose.WebObject = compose.lib.WebObject.WebObject;
+                    instance.lib.WebObject = instance.util.setupModule("WebObject");
+                    instance.WebObject = instance.lib.WebObject.WebObject;
 
                     // initialize & expose ServiceObject module
-                    compose.lib.ServiceObject = compose.util.setupModule("ServiceObject");
-                    compose.util.DataBag = compose.lib.ServiceObject.DataBag;
-                    compose.ServiceObject = compose.lib.ServiceObject.ServiceObject;
+                    instance.lib.ServiceObject = instance.util.setupModule("ServiceObject");
+                    instance.util.DataBag = instance.lib.ServiceObject.DataBag;
+                    instance.ServiceObject = instance.lib.ServiceObject.ServiceObject;
 
-                    compose.load = compose.lib.ServiceObject.load;
-                    compose.delete = compose.lib.ServiceObject.delete;
-                    compose.create = compose.lib.ServiceObject.create;
-                    compose.list = compose.lib.ServiceObject.list;
+                    // alias
+                    instance.load = instance.lib.ServiceObject.load;
+                    instance.delete = instance.lib.ServiceObject.delete;
+                    instance.create = instance.lib.ServiceObject.create;
+                    instance.list = instance.lib.ServiceObject.list;
 
-                    /**
-                     * Turn debug on or off.
-                     * If an integer is provided there will be logging only for some components
-                     *  - debug < 15   library base logs
-                     *  - debug >= 15  client log
-                     *  - debug >=  20 adapters log
-                     * @param {Boolean} debug Set to true to turn it on, false otherwise
-                     * */
-                    compose.setDebug = function(debug) {
-
-                            compose.config.debug = debug;
-
-                            if(compose.config.debug) {
-                                if(!compose.config.platform.titanium)
-                                    compose.lib.Promise && compose.lib.Promise.longStackTraces();
-                            }
-
-                        };
-
-                    /**
-                     *
-                     * @param {String} model
-                     * @return {Promise<Function(Object)>} a promise wtih a future new service object based on model definition
-                     */
-                    compose.getDefinition = function(model) {
-                        var r = compose.util.setupModule("utils/DefinitionReader");
-                        return r.read(model);
-                    };
-
-                    resolve(compose);
+                    resolve(instance);
                 });
             });
 

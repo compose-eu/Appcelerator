@@ -1,12 +1,10 @@
 
 var program = require('commander');
-var compose = require("../../index");
+var composelib = require("../../index");
 
 var ini = require('ini').parse(require('fs').readFileSync('./config.ini', 'utf-8'));
 
-console.log(compose);
-
-compose.setup(ini.compose);
+var compose;
 
 var print = function() {
     if(program.verbose && arguments.length)
@@ -285,98 +283,106 @@ var _g = function(str, o) {
     return str + ' ' + (o ? '['+ o +']' : '');
 };
 
-program
-  .version('0.0.1')
-  .option('-v, --verbose', 'Output additional information')
-  .option('-id, --soid <soid>', _g('ServiceObject ID', ini.serviceObject.soid), function(val) {
-      if(!val) {
-          val = ini.serviceObject.soid;
-          if(!val) {
-              die("Missing ServiceObject Id");
-          }
-      }
-      return val;
-  }, ini.serviceObject.soid)
-  .option('-s, --stream <stream>',  _g('ServiceObject stream', ini.serviceObject.stream), function(val) {
-      if(!val) {
-          val = ini.serviceObject.stream;
-          if(!val) {
-              die("Missing Stream name");
-          }
-      }
-      return val;
-  }, ini.serviceObject.stream)
+composelib.setup(ini.compose).then(function(api) {
 
-program
-    .command('so-create')
-    .description('Create a Service Object')
-    .option('-d, --definition <definition>', _g('ServiceObject JSON definition', ini.serviceObject.definition))
-    .action(function(){
+    compose = api;
 
-        var def = program.definition;
-        if(!def) {
-            def = ini.serviceObject.definition;
+    program
+      .version('0.0.1')
+      .option('-v, --verbose', 'Output additional information')
+      .option('-id, --soid <soid>', _g('ServiceObject ID', ini.serviceObject.soid), function(val) {
+          if(!val) {
+              val = ini.serviceObject.soid;
+              if(!val) {
+                  die("Missing ServiceObject Id");
+              }
+          }
+          return val;
+      }, ini.serviceObject.soid)
+      .option('-s, --stream <stream>',  _g('ServiceObject stream', ini.serviceObject.stream), function(val) {
+          if(!val) {
+              val = ini.serviceObject.stream;
+              if(!val) {
+                  die("Missing Stream name");
+              }
+          }
+          return val;
+      }, ini.serviceObject.stream);
+
+    program
+        .command('so-create')
+        .description('Create a Service Object')
+        .option('-d, --definition <definition>', _g('ServiceObject JSON definition', ini.serviceObject.definition))
+        .action(function(){
+
+            var def = program.definition;
             if(!def) {
-                die("Please specify a json definition to use as model");
+                def = ini.serviceObject.definition;
+                if(!def) {
+                    die("Please specify a json definition to use as model");
+                }
             }
-        }
 
-        create_so(def);
-    });
+            create_so(def);
+        });
 
-program
-    .command('so-push')
-    .description('Push test data to a Service Object')
-    .action(function(){
-        sub_push(program.soid, program.stream);
-    });
+    program
+        .command('so-push')
+        .description('Push test data to a Service Object')
+        .action(function(){
+            sub_push(program.soid, program.stream);
+        });
 
-program
-    .command('create')
-    .description('Create a subscription')
-    .option('-t, --type <type>', _g('Subscription type ', ini.subscription.type), function(val) {
-      if(!val) {
-          val = ini.serviceObject.soid;
+    program
+        .command('create')
+        .description('Create a subscription')
+        .option('-t, --type <type>', _g('Subscription type ', ini.subscription.type), function(val) {
           if(!val) {
-              die("Specify a subscription type to continue");
+              val = ini.serviceObject.soid;
+              if(!val) {
+                  die("Specify a subscription type to continue");
+              }
           }
-      }
-      return val;
-    })
-    .action(function() {
-        sub_create(program.soid, program.stream, program.type);
-    });
+          return val;
+        })
+        .action(function() {
+            sub_create(program.soid, program.stream, program.type);
+        });
 
-program
-    .command('list')
-    .description('List subscriptions')
-    .action(function() {
-        sub_list(program.soid, program.stream);
-    });
+    program
+        .command('list')
+        .description('List subscriptions')
+        .action(function() {
+            sub_list(program.soid, program.stream);
+        });
 
-program
-    .command('delete [subId]')
-    .description('Delete subscriptions by id')
-    .option('-a, --all', 'Delete all')
-    .action(function() {
+    program
+        .command('delete [subId]')
+        .description('Delete subscriptions by id')
+        .option('-a, --all', 'Delete all')
+        .action(function() {
 
-        if(program.args.length || program.all) {
-            sub_dropall(program.soid, program.stream, program.args);
-        }
-        else
-            program.outputHelp();
+            if(program.args.length || program.all) {
+                sub_dropall(program.soid, program.stream, program.args);
+            }
+            else
+                program.outputHelp();
 
-    });
+        });
 
-program
-    .command('listen <type>')
-    .description('Listen for subscription updates [http|subpub]')
-    .action(function() {
-        sub_listen(program.soid, program.stream, program.args[0] || ini.subscription.type);
-    });
+    program
+        .command('listen <type>')
+        .description('Listen for subscription updates [http|subpub]')
+        .action(function() {
+            sub_listen(program.soid, program.stream, program.args[0] || ini.subscription.type);
+        });
 
-program.parse(process.argv);
+    program.parse(process.argv);
 
-if(process.argv.length <= 2) {
-    program.outputHelp();
-}
+    if(process.argv.length <= 2) {
+        program.outputHelp();
+    }
+
+}).catch(function(e) {
+    console.log(e);
+});
