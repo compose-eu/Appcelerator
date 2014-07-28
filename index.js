@@ -143,9 +143,10 @@ limitations under the License.
                 var lib = compose.util.getVendorsPath() + 'bluebird/titanium/bluebird';
                 PromiseLib = compose.require(lib);
             }
-            else if(compose.config.platform.browser && window.define === 'undefined') {
-                PromiseLib = compose.require(compose.util.getVendorsPath() + 'bluebird/browser/bluebird');
-            }
+//            else if(compose.config.platform.browser && window.define === 'undefined') {
+//                PromiseLib = compose.require(compose.util.getVendorsPath() + 'bluebird/browser/bluebird');
+//                PromiseLib = compose.require("bluebird");
+//            }
             else {
                 PromiseLib = compose.require("bluebird");
             }
@@ -207,8 +208,6 @@ limitations under the License.
 
                 return function(requiredName) {
 
-                    console.log("Require ", requiredName);
-
                     if(requiredName.match(/bluebird/)) {
                         return window.Promise;
                     }
@@ -219,7 +218,6 @@ limitations under the License.
 
                     var module = compose.lib.registry[requiredName.substr(2)] || compose.lib.registry[requiredName];
 
-                    console.log(compose.lib.registry, requiredName.substr(2), module);
     //                var moduleName = requiredName.replace(/[.\/]+/, "").replace(/\//, "_").replace(/\//, "_");
     //                var module = window.__$$Compose[moduleName];
 
@@ -440,6 +438,8 @@ limitations under the License.
 
                     var instance = new Compose();
 
+                    instance.lib = compose.lib;
+
                     // titanium expects a path like Resources/[module]
                     // adding custom path here, overridable by module.init(baseDir)
                     var platform = instance.config.platform.name;
@@ -554,7 +554,10 @@ limitations under the License.
             // Taint DOM in case define/require are not compatible
             // (as for external browserify-ed modules)
             compose.ready = compose.util.loadDeps;
-            window.Compose = compose;
+            window.compose = window.compose || compose;
+
+            if(window.compose !== compose)
+                window.Compose = compose;
 
             define(deps, function() { return compose; });
         }

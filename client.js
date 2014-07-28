@@ -670,6 +670,7 @@ limitations under the License.
                     return lib;
                 });
             }
+
             if(typeof window !== 'undefined') {
                 window.__$$composeioRegistry[libname] = lib;
             }

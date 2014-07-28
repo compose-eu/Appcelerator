@@ -588,9 +588,6 @@ Async request are implemented as [Promise](http://promises-aplus.github.io/promi
 
 To debug easier your code try setting `api.lib.Promise.longStackTraces(true)` to see more details of exceptions thrown (* Titanium seems not supporting it)
 
-
-
-
 ##API support
 
 Current status of the library follows the [Servioticy docs](http://docs.servioticy.com) reference implementation.
