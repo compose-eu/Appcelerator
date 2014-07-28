@@ -37,6 +37,7 @@ compose.io is the [COMPOSE] JavaScript library designed to be used with [Titaniu
 - [Contributing](#contributing)
 - [Docs](#docs)
 - [License](#license)
+- [Changelog](#Changelog)
 
 ---
 
@@ -583,6 +584,12 @@ Browser support has been tested on latest Firefox, Chrome and IE 11 (any feedbac
 
 Async request are implemented as [Promise](http://promises-aplus.github.io/promises-spec/), using the [bluebird](https://github.com/petkaantonov/bluebird) library
 
+**Notes**:
+
+To debug easier your code try setting `api.lib.Promise.longStackTraces(true)` to see more details of exceptions thrown (* Titanium seems not supporting it)
+
+
+
 
 ##API support
 
@@ -598,11 +605,13 @@ Current status of the library follows the [Servioticy docs](http://docs.servioti
 * refresh - load a fresh list of streams
 * push - send data
 * pull - receive data list (filtered search adapted support TBD)
-* search - untested, implemented
+* search - partially tested, implemented
 
 *Subscriptions*
 
 * partially tested, implemented
+* http subscription
+* pubsub subscriptions (per stream)
 
 *Actuations*
 
@@ -635,6 +644,22 @@ API docs needs review. Can be generated using `jsdoc` and will be added to the r
 
 `jsdoc ./`
 
+#Changelog
+
+**v0.3**
+
+- API break: `compose.setup()` returns now a Promise with a library instance as argument
+- require refactoring, compatible with UMD loading (browserify)
+- dropped "plain" ws in favor of stomp-over-js
+
+**v0.2**
+
+- subscription support
+- stomp support
+
+**v0.1**
+
+- Initial release
 
 #License
 
@@ -654,3 +679,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
