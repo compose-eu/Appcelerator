@@ -78,9 +78,7 @@ You can simply link to the `index.js` script inside your page
 The library will self-load all its dependencies, you can provide a callback to the `ready` method in order to get notified of the completion of the operation.
 
 ```
-Compose.ready(function(compose) {
-    // all dependencies loaded!
-});
+console.log(window.compose || window.Compose);
 ```
 
 If you wish to use the library in an AMD-enable setup (like with [require.js](http://requirejs.org/)) some configuration are required in order to load the correct resources.
@@ -120,9 +118,17 @@ The minimal configuration required is the apiKey to access the API.
 
 Please refer to the [Online demo](http://www.servioticy.com/?page_id=73) section on servioticy.com to request your api key.
 
-`compose.setup('your api key');`
+```
+compose.setup('your api key 1').then(function(api1) {
+    //
+    // api is the instance of your api key
+});
 
-All the available options follow
+// load another apiKey
+compose.setup('other api key').then(function(api2) { /* ... */ });
+```
+
+Details of available options:
 
 ```
 compose.setup({
@@ -134,12 +140,11 @@ compose.setup({
     transport: 'mqtt'
 
     // All optional from here on
-    
+
     // Compose API endpoint
     url: 'http://api.servioticy.com'
 
-
-    // Additional configuration to be passed to sub-modules handling data trasmission
+    // Additional configuration to be passed to sub-modules handling data transmission
     // can be passed by adding a properties matching the transport name
     mqtt: {
         proto: 'mqtt', // or 'mqtts'
@@ -148,8 +153,10 @@ compose.setup({
         user: 'compose',
         password: 'shines'
     }
-
-});
+    stomp: { /* see above.. */}
+})
+.then(function(api) {  console.log("Ready!");  })
+.catch(function(e) {  console.error("Error!", e);  });
 
 ```
 
@@ -160,7 +167,7 @@ compose.setup({
 
 ```
 
-compose.list()
+api.list()
     .then(function(list) {
 
         console.info("List loaded, " + list.length + " elements");
@@ -181,7 +188,7 @@ compose.list()
 Load all the Service Objects in the list.
 
 ```
-compose.list().map(compose.load).then(function(list) {
+api.list().map(api.load).then(function(list) {
     // list is an array containing ServiceObject instances
     list.forEach(function(so) {
         console.log(so.id, so.toString());
@@ -194,7 +201,7 @@ compose.list().map(compose.load).then(function(list) {
 Get the data from all the Service Objects in the list
 
 ```
-compose.list().map(compose.load).map(function(so) {
+api.list().map(api.load).map(function(so) {
     // return a Promise to use further chainability
     return so.getStream("location") && so.getStream("location").pull();
 })
@@ -215,7 +222,7 @@ compose.list().map(compose.load).map(function(so) {
 
 Delete all the ServiceObject
 ```
-compose.list().map(compose.delete).then(function() {
+api.list().map(api.delete).then(function() {
     console.log("Done");
 })
 // .catch(fn).finally(fn)
@@ -262,7 +269,7 @@ Create the drone Service Object on the backend
 
 ```
 
-compose.create(droneDefinition)
+api.create(droneDefinition)
     .then(function(drone) {
 
         // drone is the new ServiceObject create
@@ -287,8 +294,8 @@ The json definition can be stored in the `./definitions` folder (eg `./definitio
 
 ```
 // use just the json filename
-compose.getDefinition("drone")
-    .then(compose.create) // enjoy Promise
+api.getDefinition("drone")
+    .then(api.create) // enjoy Promise
     .then(function(drone) {
         console.log("Drone SO loaded!");
     });
@@ -318,7 +325,7 @@ Imagine now to work on a mobile application to control the drone.
 
 ```
 var soid = '<ServiceObject id>';
-compose.load(soid)
+api.load(soid)
     .then(function(drone) {
 
         // drone is the new ServiceObject
