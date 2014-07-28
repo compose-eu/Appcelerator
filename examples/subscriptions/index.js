@@ -4,6 +4,8 @@ var compose = require("../../index");
 
 var ini = require('ini').parse(require('fs').readFileSync('./config.ini', 'utf-8'));
 
+console.log(compose);
+
 compose.setup(ini.compose);
 
 var print = function() {

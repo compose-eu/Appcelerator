@@ -23,18 +23,24 @@ limitations under the License.
         throw new compose.error.ComposeError("Browser support for mqtt has not been implemented yet! Please, use stomp instead");
     };
 
-    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-        module.exports = mqttlib;
-    }
-    else {
-        if (typeof define === 'function' && define.amd) {
-            define(['compose'], function(compose) {
-                return mqttlib;
-            });
+    //-- multiplatform support
+    (function(libname, lib, deps) {
+        deps = (deps instanceof Array) ? deps : ['compose'];
+        if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+            module.exports = lib;
         }
         else {
-            window.__$$Compose.platforms_mqtt_browser = mqttlib;
+
+            if (typeof define === 'function' && define.amd) {
+                define(deps, function(compose) {
+                    return lib;
+                });
+            }
+            if(typeof window !== 'undefined') {
+                window.__$$composeioRegistry[libname] = lib;
+            }
         }
-    }
+    })
+    ('platforms/mqtt/browser', mqttlib);
 
 })();

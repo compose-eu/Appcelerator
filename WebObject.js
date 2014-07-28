@@ -228,7 +228,7 @@ limitations under the License.
         };
 
         /**
-         * @return {ChannelsList} The list of channels 
+         * @return {ChannelsList} The list of channels
          */
         Stream.prototype.getChannels = function() {
             return this.channels;
@@ -464,18 +464,24 @@ limitations under the License.
 
     };
 
-    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-        module.exports = wolib;
-    }
-    else {
-        if (typeof define === 'function' && define.amd) {
-            define(['compose', 'utils/List'], function(compose) {
-                return wolib;
-            });
+    //-- multiplatform support
+    (function(libname, lib, deps) {
+        deps = (deps instanceof Array) ? deps : ['compose'];
+        if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+            module.exports = lib;
         }
         else {
-            window.__$$Compose.WebObject = wolib;
+
+            if (typeof define === 'function' && define.amd) {
+                define(deps, function(compose) {
+                    return lib;
+                });
+            }
+            if(typeof window !== 'undefined') {
+                window.__$$composeioRegistry[libname] = lib;
+            }
         }
-    }
+    })
+    ('WebObject', wolib, ['compose', 'utils/List']);
 
 })();

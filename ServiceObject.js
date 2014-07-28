@@ -1487,18 +1487,26 @@ limitations under the License.
 
     };
 
-    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-        module.exports = solib;
-    }
-    else {
-        if (typeof define === 'function' && define.amd) {
-            define(['compose', 'WebObject', 'utils/List'], function(compose) {
-                return solib;
-            });
+    //-- multiplatform support
+    (function(libname, lib, deps) {
+        deps = (deps instanceof Array) ? deps : ['compose'];
+        if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+            module.exports = lib;
         }
         else {
-            window.__$$Compose.ServiceObject = solib;
+
+            if (typeof define === 'function' && define.amd) {
+                define(deps, function(compose) {
+                    return lib;
+                });
+            }
+            if(typeof window !== 'undefined') {
+                window.__$$composeioRegistry[libname] = lib;
+            }
         }
-    }
+    })
+    ('ServiceObject', solib, ['compose', 'WebObject', 'utils/List']);
+    //-- !multiplatform support
+
 
 })();

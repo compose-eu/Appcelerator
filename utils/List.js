@@ -400,21 +400,24 @@ limitations under the License.
 
     };
 
-
-    if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-        module.exports = listlib;
-    }
-    else {
-        if (typeof define === 'function' && define.amd) {
-            define(['compose'], function(compose) {
-                return listlib;
-            });
+    //-- multiplatform support
+    (function(libname, lib, deps) {
+        deps = (deps instanceof Array) ? deps : ['compose'];
+        if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+            module.exports = lib;
         }
         else {
-            window.__$$Compose.utils_List = listlib;
+
+            if (typeof define === 'function' && define.amd) {
+                define(deps, function(compose) {
+                    return lib;
+                });
+            }
+            if(typeof window !== 'undefined') {
+                window.__$$composeioRegistry[libname] = lib;
+            }
         }
-    }
-
-
+    })
+    ('utils/List', listlib, ['compose']);
 
 })();
