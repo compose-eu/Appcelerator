@@ -292,6 +292,7 @@ api.create(droneDefinition)
 ##Load a Service Object definition
 
 The json definition can be stored in the `./definitions` folder (eg `./definitions/drone.json`)
+The definition path can be specified either as a path eg. `../so/definitions/drone.json`
 
 ```
 // use just the json filename

@@ -76,13 +76,13 @@ limitations under the License.
     var reader = {};
     reader.setup = function(compose) {
 
-        if (!readDefinition[compose.config.platform]) {
+        if (!readDefinition[compose.config.platform.name]) {
             throw new Error("Platform not supported");
         }
 
         reader.read = function(file) {
             return new compose.lib.Promise(function(success, failure) {
-                readDefinition[compose.config.platform](file, compose, success, failure);
+                readDefinition[compose.config.platform.name](file, compose, success, failure);
             });
 
         };

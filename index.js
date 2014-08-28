@@ -407,6 +407,13 @@ limitations under the License.
          * @return {Promise<Function(Object)>} a promise wtih a future new service object based on model definition
          */
         compose.getDefinition = function(model) {
+
+            // handle model names with path
+            var _s = model.substr(0,1);
+            if(_s === '.' || _s === '/') {
+                instance.config.definitionsPath = "";
+            }
+
             var r = compose.util.setupModule("utils/DefinitionReader");
             return r.read(model);
         };
@@ -475,14 +482,13 @@ limitations under the License.
                                 registerUrl + " for further instructions");
                     }
 
-
-                    var setPaths = function() {
-                        if(instance.config.platform.node || instance.config.platform.browser) {
-                            // free definition path location
-                            instance.config.definitionsPath = "";
-                        }
-                    };
-                    setPaths();
+//                    var setPaths = function() {
+//                        if(instance.config.platform.node || instance.config.platform.browser) {
+//                            // free definition path location
+//                            instance.config.definitionsPath = "";
+//                        }
+//                    };
+//                    setPaths();
 
                     /**
                      * Select the best supported transport mechanism for the current platform
