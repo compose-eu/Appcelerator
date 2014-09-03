@@ -473,7 +473,7 @@ limitations under the License.
                         instance.config.url = _config.url || instance.config.url;
                         instance.config.apiKey = _config.apiKey;
 
-                        instance.config.debug = _config.debug || instance.config.debug;
+                        instance.config.debug = (typeof _config.debug !== 'undefined') ? _config.debug : instance.config.debug;
                         DEBUG = instance.config.debug;
                     }
 
@@ -511,7 +511,7 @@ limitations under the License.
                     };
                     selectPreferredTransport();
 
-                    instance.setDebug(config.debug);
+                    instance.setDebug(instance.config.debug);
 
                     instance.util.List = instance.util.setupModule("utils/List");
 
