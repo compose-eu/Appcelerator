@@ -148,7 +148,10 @@ adapter.initialize = function(compose) {
                 handler.emitter.trigger('error', e);
             };
 
-            client.connect(mqttConf.user, mqttConf.password, _successCb, _failCb);
+            client.connect({
+                    login: mqttConf.user,
+                    passcode: mqttConf.password
+            }, _successCb, _failCb);
 //
 //            client.on('close', function() {
 //                d("Connection closed");
