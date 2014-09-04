@@ -21,8 +21,9 @@ var DEBUG = false;
 
 var d = function(m) { (DEBUG === true || (DEBUG > 19)) && console.log("[mqtt client] " + m); };
 
-var stomp = require("stompjs");
+var mqtt = require("mqtt");
 var parseUrl = require("url").parse;
+
 
 var parseResponseContent = function(message) {
 
@@ -118,46 +119,46 @@ adapter.initialize = function(compose) {
                     mqttConf.proto + "://" + mqttConf.user + ":" + mqttConf.password +
                     "@" + mqttConf.host + ":" + mqttConf.port);
 
-            client = stomp.overTCP(mqttConf.host, mqttConf.port);
+            client = mqtt.createClient(mqttConf.port, mqttConf.host, {
+                username: mqttConf.user,
+                password: mqttConf.password
+            });
 
-            var _successCb = function() {
+            client.on('close', function() {
+                d("Connection closed");
+                handler.emitter.trigger('close', client);
+            });
 
-                handler.emitter.trigger('connect', client);
-
-                client.subscribe(topics.to, function() {
-                    d("Subscribed to " + topics.to);
-
-                    d("New message from topic " + topic);
-                    if(topic === topics.to) {
-                        var resp = parseResponseContent(message);
-//                            console.log("#### message!", topic, resp);
-                        queue.handleResponse(resp);
-                    }
-
-                    // return promise
-                    connectionSuccess();
-
-                });
-            };
-            var _failCb = function(e) {
+            client.on('error', function(e) {
 
                 d("Connection error");
                 d(e);
 
                 connectionFail(e);
                 handler.emitter.trigger('error', e);
-            };
+            });
 
-            client.connect({
-                    login: mqttConf.user,
-                    passcode: mqttConf.password
-            }, _successCb, _failCb);
-//
-//            client.on('close', function() {
-//                d("Connection closed");
-//                handler.emitter.trigger('close', client);
-//            });
+            client.on('connect', function() {
 
+                handler.emitter.trigger('connect', client);
+
+                client.subscribe(topics.to, function() {
+                    d("Subscribed to " + topics.to);
+                    client.on('message', function(topic, message, response) {
+
+                        d("New message from topic " + topic);
+                        if(topic === topics.to) {
+                            var resp = parseResponseContent(message);
+//                            console.log("#### message!", topic, resp);
+                            queue.handleResponse(resp);
+                        }
+                    });
+
+                    // return promise
+                    connectionSuccess();
+
+                });
+            });
         }
         else {
             // already connected
@@ -194,7 +195,9 @@ adapter.initialize = function(compose) {
         // 3rd arg has qos option { qos: 0|1|2 }
         // @todo check which one fit better in this case
         d("Sending message..");
-        client.send(topics.from, { qos: 0 /*, retain: true*/ }, JSON.stringify(request));
+        client.publish(topics.from, JSON.stringify(request), { qos: 0 /*, retain: true*/ }, function() {
+            d("Message published");
+        });
 
     };
 
@@ -212,11 +215,13 @@ adapter.initialize = function(compose) {
 
         d("[stomp client] Listening to " + topic);
         client.subscribe(topic, function(message) {
-//            if(topic === srctopic) {
-                d("[stomp client] New message from topic " + topic);
-                message.messageId = uuid;
-                queue.handleResponse(message);
-//            }
+            client.on('message', function(srctopic, message, response) {
+                if(topic === srctopic) {
+                    d("[stomp client] New message from topic " + topic);
+                    message.messageId = uuid;
+                    queue.handleResponse(message);
+                }
+            });
         });
     };
 
