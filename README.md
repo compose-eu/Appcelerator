@@ -645,6 +645,11 @@ API docs needs review. Can be generated using `jsdoc` and will be added to the r
 
 #Changelog
 
+**v0.4**
+
+- Subscription via stomp over ws and mqtt are better supported
+- minor bug fixes
+
 **v0.3**
 
 - API break: `compose.setup()` returns now a Promise with a library instance as argument
