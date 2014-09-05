@@ -206,6 +206,7 @@ limitations under the License.
         DataReceiver.prototype.notify = function(topic, event) {
 
             topic = topic || this.defaultTopic;
+            this.registry[topic] = this.registry[topic] || [];
             var l = this.registry[topic].length;
 
             var args = (function() {
