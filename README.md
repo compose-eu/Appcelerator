@@ -63,7 +63,7 @@ Add the `compose.io` javascript library inside the `Resources` folder (or `app/l
 
 Install the module from the git repository
 
-` npm i git+https://github.com/compose-eu/Appcelerator.git`
+` npm i compose-eu/Appcelerator`
 
 and then import it in your code
 
@@ -72,11 +72,11 @@ and then import it in your code
 
 ##Browser
 
-You can simply link to the `index.js` script inside your page
+You can link to the `index.js` script inside your page
 
 `<script src="js/compose.io/index.js"></script>`
 
-The library will self-load all its dependencies, you can provide a callback to the `ready` method in order to get notified of the completion of the operation.
+The library will self-load all its dependencies on `setup` call (see later)
 
 ```
 console.log(window.compose || window.Compose);
@@ -98,9 +98,9 @@ require.config({
         "WebObject": 'compose.io/WebObject',
         "ServiceObject": 'compose.io/ServiceObject',
 
-        "platforms/mqtt/browser": "compose.io/platforms/mqtt/browser",
         "platforms/stomp/browser": "compose.io/platforms/stomp/browser",
         "platforms/http/browser": "compose.io/platforms/http/browser"
+        "platforms/mqtt/browser": "compose.io/platforms/mqtt/browser",
 
     }
 });
@@ -109,7 +109,7 @@ Once done, just request the module
 
 `var compose = require('compose.io')`
 
-The library is also already configured to be used with `browserify`. To generate the whole library as a bundle use eg.
+The library is also configured to be used with `browserify` to support UMD node-like `require`. To generate the whole library as a bundle use eg.
 
 `browserify index.js > compose-bundle.js`
 
@@ -119,14 +119,15 @@ The minimal configuration required is the apiKey to access the API.
 
 Please refer to the [Online demo](http://www.servioticy.com/?page_id=73) section on servioticy.com to request your api key.
 
+**Note** From `v0.4.0` a call to `compose.setup` will return a promise, introducing a breaking change. Please upgrade your code accordingly!
+
 ```
 compose.setup('your api key 1').then(function(api1) {
-    //
-    // api is the instance of your api key
+    // api1 is the instance of your first api key
 });
 
 // load another apiKey
-compose.setup('other api key').then(function(api2) { /* ... */ });
+compose.setup('other api key').then(function(api2) { /* another api key  */ });
 ```
 
 Details of available options:
