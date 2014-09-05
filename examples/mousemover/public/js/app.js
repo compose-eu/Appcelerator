@@ -1,5 +1,6 @@
 
 var DEBUG = true;
+var api;
 
 var Game = function() {
 
@@ -75,12 +76,12 @@ Game.prototype.getMice = function(then) {
 
     if(soid) {
         me.log("Existing mice " + soid);
-        compose.load(soid).then(onLoad).catch(this.error);
+        api.load(soid).then(onLoad).catch(this.error);
         return;
     }
     else {
         me.log("New mice");
-        compose.create(me.miceModel).then(onLoad).catch(this.error);
+        api.create(me.miceModel).then(onLoad).catch(this.error);
     }
 
 };
@@ -128,7 +129,7 @@ Game.prototype.start = function() {
 };
 
 Game.prototype.getPeople = function(then) {
-//    compose.list()
+//    api.list()
 //        .then(function() {
 //
 //        })
@@ -144,7 +145,7 @@ Game.prototype.getTarget = function(then) {
     }
 
     me.log("Load target " + me.config.targetSo);
-    compose.load(me.config.targetSo)
+    api.load(me.config.targetSo)
         .then(function(so) {
             me.target = so;
             then(so);
@@ -157,17 +158,18 @@ Game.prototype.getTarget = function(then) {
 
 Game.prototype.initialize = function() {
     var me = this;
-    compose.ready(function() {
-        jQuery(function($) {
-            $.getJSON('/config.json', function(config) {
 
-                compose.setup(config.compose);
+    jQuery(function($) {
+        $.getJSON('/config.json', function(config) {
 
-                me.config = config;
-                me.$ = $;
+            me.config = config;
+            me.$ = $;
+
+            compose.setup(me.config.compose).then(function(_api) {
+                api = _api;
                 me.start();
-
             });
+
         });
     });
 };

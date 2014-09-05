@@ -58,7 +58,7 @@ limitations under the License.
     var adapter = {};
     adapter.initialize = function(compose) {
 
-        var Stomp = require("stompjs");
+        var Stomp = compose.require("stompjs");
 
         DEBUG = compose.config.debug;
 
