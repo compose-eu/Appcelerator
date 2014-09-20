@@ -161,7 +161,7 @@ limitations under the License.
          * */
         DataReceiver.prototype.getIndex = function(so, topic) {
             topic = topic || this.defaultTopic;
-            var l = this.registry[topic].length;
+            var l = this.registry[topic] ? this.registry[topic].length : 0;
             for(var i = 0; i < l; i++) {
                 if(this.registry[topic][i] === so) {
                     return i;

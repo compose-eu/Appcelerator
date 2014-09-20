@@ -214,14 +214,17 @@ adapter.initialize = function(compose) {
         var uuid = queue.registerSubscription(topic, handler);
 
         d("[stomp client] Listening to " + topic);
-        client.subscribe(topic, function(message) {
-            client.on('message', function(srctopic, message, response) {
-                if(topic === srctopic) {
-                    d("[stomp client] New message from topic " + topic);
-                    message.messageId = uuid;
-                    queue.handleResponse(message);
-                }
-            });
+
+        client.on('message', function(srctopic, message, response) {
+            if(topic === srctopic) {
+                d("[stomp client] New message from topic " + topic);
+                message.messageId = uuid;
+                queue.handleResponse(message);
+            }
+        });
+
+        client.subscribe(topic, function() {
+            d('Subscribed');
         });
     };
 

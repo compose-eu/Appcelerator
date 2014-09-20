@@ -393,7 +393,6 @@ limitations under the License.
         compose.setDebug = function(debug) {
 
                 compose.config.debug = debug;
-
                 if(compose.config.debug) {
                     if(!compose.config.platform.titanium)
                         compose.lib.Promise && compose.lib.Promise.longStackTraces();

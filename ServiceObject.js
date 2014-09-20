@@ -497,9 +497,7 @@ limitations under the License.
                             topic: 'stream',
                             stream: me,
                             emitter: me.emitter(),
-                            onQueueData: function() {
-
-                            }
+                            onQueueData: function() {}
                         });
                     }
                     catch(e) {
@@ -1124,14 +1122,16 @@ limitations under the License.
         StreamList.prototype.validate = function(stream) {
 
             stream.description = stream.description || "";
+            stream.type = stream.type || "";
+            stream.name = stream.name || null;
 
-            if(!stream.name) {
-                throw new ValidationError("Stream property `name` is required");
-            }
+//            if(!stream.name) {
+//                throw new ValidationError("Stream property `name` is required");
+//            }
 
-            if(!stream.type) {
-                throw new ValidationError("Stream property `type` is required");
-            }
+//            if(!stream.type) {
+//                throw new ValidationError("Stream property `type` is required");
+//            }
 
             var streamObj = new Stream(stream);
             streamObj.container(this.container());
