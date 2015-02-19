@@ -1,0 +1,29 @@
+{
+  "name": "compose.io",
+  "main": "index.js",
+  "version": "0.4.0",
+  "homepage": "https://github.com/muka/Appcelerator",
+  "authors": [
+    "Luca Capra <luca.capra@gmail.com>"
+  ],
+  "description": "Compose library to interact with Service Object",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "iot",
+    "service",
+    "object",
+    "compose"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
