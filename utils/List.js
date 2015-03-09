@@ -73,14 +73,12 @@ limitations under the License.
          * */
         Enumerable.prototype.next = function() {
 
-            if(this.__$cursor === null) {
-                this.__$cursor = -1;
-            }
+            var emptyCursor = (this.__$cursor === null);
 
-            if((this.index()+1) > this.size())
+            if(!emptyCursor && (this.index()+1) >= this.size())
                 return false;
 
-            this.__$cursor++;
+            this.__$cursor = emptyCursor ? 0 : this.__$cursor+1;
             return true;
         };
 

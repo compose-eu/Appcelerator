@@ -394,13 +394,13 @@ limitations under the License.
                     return _defaultValue;
                 };
 
-                // add a get function to retrieve a single value without the full json path
+                // returns a simple js object with key-value pairs of data
                 data.asObject = function() {
 
                     var res = {};
                     for(var i in data.channels) {
                         (function(_i) {
-                            res[_i] =  data.channels[_i];
+                            res[_i] =  data.channels[_i]['current-value'];
                         })(i);
                     }
 
