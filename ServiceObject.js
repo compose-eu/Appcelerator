@@ -393,6 +393,20 @@ limitations under the License.
 
                     return _defaultValue;
                 };
+
+                // add a get function to retrieve a single value without the full json path
+                data.asObject = function() {
+
+                    var res = {};
+                    for(var i in data.channels) {
+                        (function(_i) {
+                            res[_i] =  data.channels[_i];
+                        })(i);
+                    }
+
+                    return res;
+                };
+
                 return data;
             }
 
