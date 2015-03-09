@@ -389,7 +389,12 @@ drone.getStream("location")
         var item = data.at(index);
 
         console.log(item);
+        // the original format of the data
         // { channels: { latitude: { current-value: 'val' } } }
+
+        console.log(item.asObject());
+        // simple js object with the data
+        // { latitude: 'val', longitude: 'val' }
 
         // shorthand to get the values
         var lat = item.get("latitude"),
