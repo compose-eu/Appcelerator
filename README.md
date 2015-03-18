@@ -650,6 +650,10 @@ API docs needs review. Can be generated using `jsdoc` and will be added to the r
 
 #Changelog
 
+**v0.4.1**
+
+- Added argument to actuation.invoke
+
 **v0.4**
 
 - Subscription via stomp over ws and mqtt are better supported
@@ -674,7 +678,7 @@ API docs needs review. Can be generated using `jsdoc` and will be added to the r
 
 Apache2
 
-Copyright 2014 CREATE-NET
+Copyright CREATE-NET
 Developed for COMPOSE project (compose-project.eu)
 
 Licensed under the Apache License, Version 2.0 (the "License");
