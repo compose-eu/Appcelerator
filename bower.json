@@ -4,7 +4,7 @@
   "version": "0.4.0",
   "homepage": "https://github.com/muka/Appcelerator",
   "authors": [
-    "Luca Capra <luca.capra@gmail.com>"
+    "Luca Capra <luca.capra@create-net.com>"
   ],
   "description": "Compose library to interact with Service Object",
   "moduleType": [
