@@ -1,6 +1,8 @@
 /*******************************************************************************
-Copyright 2014 CREATE-NET
+Copyright 2015 CREATE-NET
 Developed for COMPOSE project (compose-project.eu)
+
+@author Luca Capra <luca.capra@create-net.org>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -221,15 +223,15 @@ limitations under the License.
 
         /**
          * Invoke the ServiceObject action
-         *
+         * @param {mixed} body The body of the request
          * @return {Promise} Promise callback with result
          */
-        Actuation.prototype.invoke = function() {
+        Actuation.prototype.invoke = function(body) {
             var me = this;
             return new Promise(function(resolve, reject) {
 
                 var url = '/'+ me.container().id +'/actuations/'+ me.name;
-                me.container().getClient().post(url, null, function(data) {
+                me.container().getClient().post(url, body, function(data) {
 
                     me.id = data.id;
                     me.createdAt = data.createdAt;
