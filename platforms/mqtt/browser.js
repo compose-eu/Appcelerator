@@ -1,6 +1,8 @@
 /*******************************************************************************
-Copyright 2014 CREATE-NET
+Copyright 2015 CREATE-NET
 Developed for COMPOSE project (compose-project.eu)
+
+@author Luca Capra <luca.capra@create-net.org>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
